@@ -1,0 +1,455 @@
+{% extends 'base.html' %}
+
+{% block title %}To'lov - {{ course.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.payment-method-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.payment-method-card:hover {
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+}
+
+.payment-method-card input:checked + div {
+    border-color: #007bff;
+    background: #f8f9ff;
+}
+
+.payment-method-card input:checked ~ div {
+    color: #007bff;
+}
+
+.click-logo svg,
+.payme-logo svg,
+.wallet-logo svg {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.payment-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.payment-popup.show {
+    display: flex;
+}
+
+.payment-popup-content {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.payment-popup-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6c757d;
+    transition: color 0.2s;
+}
+
+.payment-popup-close:hover {
+    color: #dc3545;
+}
+
+.payment-popup-logo {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.payment-popup-logo img {
+    max-width: 150px;
+    height: auto;
+}
+
+.payment-popup-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.payment-popup-amount {
+    text-align: center;
+    font-size: 32px;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.payment-popup-description {
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 25px;
+}
+
+.payment-popup-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+}
+
+.payment-popup-button.click {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: #1a1a1a;
+}
+
+.payment-popup-button.payme {
+    background: linear-gradient(135deg, #00B5E2 0%, #0088B3 100%);
+    color: white;
+}
+
+.payment-popup-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.payment-popup-cancel {
+    background: #6c757d;
+    color: white;
+}
+
+.payment-popup-cancel:hover {
+    background: #5a6268;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'courses:home' %}" class="text-decoration-none">Bosh sahifa</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'courses:detail' course.slug %}" class="text-decoration-none">{{ course.title }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">To'lov</li>
+            </ol>
+        </nav>
+        
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card card-custom">
+                    <div class="card-body p-4">
+                        <h2 class="fw-bold mb-4">To'lov ma'lumotlari</h2>
+                        
+                        <form method="post" action="{% url 'payments:process' course.slug %}">
+                            {% csrf_token %}
+                            
+                            <h5 class="fw-bold mb-3">To'lov usuli</h5>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4 col-6">
+                                    <label class="installment-card p-3 payment-method-card" data-method="click">
+                                        <input type="radio" name="payment_method" value="click" class="d-none" checked>
+                                        <div class="d-flex flex-column align-items-center gap-2">
+                                            <div class="click-logo">
+                                                <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <rect width="60" height="60" rx="12" fill="#FFD700"/>
+                                                    <path d="M15 20H45V25H15V20Z" fill="#1A1A1A"/>
+                                                    <path d="M15 27H45V32H15V27Z" fill="#1A1A1A"/>
+                                                    <path d="M15 34H35V39H15V34Z" fill="#1A1A1A"/>
+                                                </svg>
+                                            </div>
+                                            <span class="fw-bold text-dark">Click</span>
+                                            <span class="small text-muted">Tez va qulay</span>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                    <label class="installment-card p-3 payment-method-card" data-method="payme">
+                                        <input type="radio" name="payment_method" value="payme" class="d-none">
+                                        <div class="d-flex flex-column align-items-center gap-2">
+                                            <div class="payme-logo">
+                                                <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <rect width="60" height="60" rx="12" fill="#00B5E2"/>
+                                                    <path d="M12 18H48V24H12V18Z" fill="white"/>
+                                                    <path d="M12 27H48V33H12V27Z" fill="white"/>
+                                                    <path d="M12 36H30V42H12V36Z" fill="white"/>
+                                                </svg>
+                                            </div>
+                                            <span class="fw-bold text-dark">Payme</span>
+                                            <span class="small text-muted">Xavfsiz to'lov</span>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-md-4 col-6">
+                                    <label class="installment-card p-3 payment-method-card" data-method="wallet">
+                                        <input type="radio" name="payment_method" value="wallet" class="d-none">
+                                        <div class="d-flex flex-column align-items-center gap-2">
+                                            <div class="wallet-logo">
+                                                <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <rect width="60" height="60" rx="12" fill="#6C63FF"/>
+                                                    <path d="M15 20H45V40H15V20Z" fill="white"/>
+                                                    <path d="M20 25H25V35H20V25Z" fill="#6C63FF"/>
+                                                    <path d="M30 25H35V35H30V25Z" fill="#6C63FF"/>
+                                                    <path d="M40 25H45V35H40V25Z" fill="#6C63FF"/>
+                                                </svg>
+                                            </div>
+                                            <span class="fw-bold text-dark">Hisob</span>
+                                            <span class="small text-muted">Ichki hisob</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <h5 class="fw-bold mb-3">Muddatli to'lov rejasi</h5>
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <label class="installment-card p-3">
+                                        <input type="radio" name="months" value="0" class="d-none" checked>
+                                        <div class="text-center">
+                                            <div class="display-6 fw-bold text-primary mb-1">To'liq</div>
+                                            <div class="text-muted small">{{ course.get_discounted_price|floatformat:0 }} so'm</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                {% for plan in payment_plans %}
+                                <div class="col-6">
+                                    <label class="installment-card p-3">
+                                        <input type="radio" name="months" value="{{ plan.months }}" class="d-none">
+                                        <div class="text-center">
+                                            <div class="display-6 fw-bold text-primary mb-1">{{ plan.months }} oy</div>
+                                            <div class="text-muted small">{{ plan.get_monthly_payment|floatformat:0 }} so'm/oy</div>
+                                            <div class="text-muted small">Jami: {{ plan.get_total_amount|floatformat:0 }} so'm</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <h5 class="fw-bold mb-3">Shaxsiy ma'lumotlar</h5>
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label for="first_name" class="form-label">Ism</label>
+                                    <input type="text" name="first_name" value="{{ user.first_name }}" required class="form-control">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="last_name" class="form-label">Familya</label>
+                                    <input type="text" name="last_name" value="{{ user.last_name }}" required class="form-control">
+                                </div>
+                                <div class="col-12">
+                                    <label for="phone" class="form-label">Telefon</label>
+                                    <input type="tel" name="phone" value="{{ user.phone }}" required class="form-control">
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-full btn-custom">To'lovni amalga oshirish</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card card-custom sticky-top" style="top: 100px;">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">Buyurtma xulosasi</h5>
+                        
+                        <div class="vstack gap-2 mb-3">
+                            <div class="d-flex justify-content-between text-muted">
+                                <span>Kurs narxi:</span>
+                                <span>{{ course.price|floatformat:0 }} so'm</span>
+                            </div>
+                            {% if course.discount_price %}
+                            <div class="d-flex justify-content-between text-success">
+                                <span>Chegirma:</span>
+                                <span>-{{ course.discount|floatformat:0 }} so'm</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <hr class="my-3">
+                        
+                        <div class="d-flex justify-content-between fw-bold mb-4">
+                            <span>Jami:</span>
+                            <span>{{ course.get_discounted_price|floatformat:0 }} so'm</span>
+                        </div>
+                        
+                        <div class="bg-primary bg-opacity-10 rounded p-3 mb-3">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="fas fa-info-circle text-primary mt-1"></i>
+                                <div class="small text-muted">
+                                    <p class="fw-bold text-dark mb-1">To'lovdan so'ng:</p>
+                                    <ul class="mb-0 ps-3">
+                                        <li>Kursga darhol kirish</li>
+                                        <li>Barcha darslarga ruxsat</li>
+                                        <li>Sertifikat olish imkoniyati</li>
+                                        <li>24/7 yordam</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <a href="{% url 'courses:detail' course.slug %}" class="text-decoration-none text-primary">
+                                <i class="fas fa-arrow-left me-1"></i>Kursga qaytish
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Payment Popup -->
+<div class="payment-popup" id="paymentPopup">
+    <div class="payment-popup-content">
+        <button class="payment-popup-close" onclick="closePaymentPopup()">&times;</button>
+        
+        <div class="payment-popup-logo" id="popupLogo">
+            <!-- Logo will be inserted here -->
+        </div>
+        
+        <h3 class="payment-popup-title" id="popupTitle">To'lov tizimiga o'tish</h3>
+        
+        <div class="payment-popup-amount" id="popupAmount">
+            {{ course.get_discounted_price|floatformat:0 }} so'm
+        </div>
+        
+        <p class="payment-popup-description">
+            Siz <strong>{{ course.title }}</strong> kursini sotib olishmoqchisiz. 
+            To'lovni amalga oshirish uchun pastdagi tugmani bosing.
+        </p>
+        
+        <button class="payment-popup-button" id="popupButton" onclick="confirmPayment()">
+            Davom etish
+        </button>
+        
+        <button class="payment-popup-button payment-popup-cancel" onclick="closePaymentPopup()">
+            Bekor qilish
+        </button>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle payment method selection
+    const paymentCards = document.querySelectorAll('.payment-method-card');
+    
+    paymentCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+            
+            // Update visual state
+            paymentCards.forEach(c => c.style.borderColor = '#e9ecef');
+            this.style.borderColor = '#007bff';
+        });
+    });
+    
+    // Handle form submission
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+        
+        if (paymentMethod === 'click' || paymentMethod === 'payme') {
+            e.preventDefault();
+            showPaymentPopup(paymentMethod);
+        }
+    });
+});
+
+function showPaymentPopup(method) {
+    const popup = document.getElementById('paymentPopup');
+    const popupLogo = document.getElementById('popupLogo');
+    const popupTitle = document.getElementById('popupTitle');
+    const popupButton = document.getElementById('popupButton');
+    
+    if (method === 'click') {
+        popupLogo.innerHTML = `
+            <svg width="120" height="120" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="60" height="60" rx="12" fill="#FFD700"/>
+                <path d="M15 20H45V25H15V20Z" fill="#1A1A1A"/>
+                <path d="M15 27H45V32H15V27Z" fill="#1A1A1A"/>
+                <path d="M15 34H35V39H15V34Z" fill="#1A1A1A"/>
+            </svg>
+        `;
+        popupTitle.textContent = 'Click orqali to\'lov';
+        popupButton.className = 'payment-popup-button click';
+        popupButton.textContent = 'Click ilovasiga o\'tish';
+    } else if (method === 'payme') {
+        popupLogo.innerHTML = `
+            <svg width="120" height="120" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="60" height="60" rx="12" fill="#00B5E2"/>
+                <path d="M12 18H48V24H12V18Z" fill="white"/>
+                <path d="M12 27H48V33H12V27Z" fill="white"/>
+                <path d="M12 36H30V42H12V36Z" fill="white"/>
+            </svg>
+        `;
+        popupTitle.textContent = 'Payme orqali to\'lov';
+        popupButton.className = 'payment-popup-button payme';
+        popupButton.textContent = 'Payme ilovasiga o\'tish';
+    }
+    
+    popup.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closePaymentPopup() {
+    const popup = document.getElementById('paymentPopup');
+    popup.classList.remove('show');
+    document.body.style.overflow = 'auto';
+}
+
+function confirmPayment() {
+    const form = document.querySelector('form');
+    form.submit();
+}
+
+// Close popup on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closePaymentPopup();
+    }
+});
+
+// Close popup on background click
+document.getElementById('paymentPopup').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closePaymentPopup();
+    }
+});
+</script>
+{% endblock %}

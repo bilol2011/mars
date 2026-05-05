@@ -1,0 +1,130 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+
+{% block title %}Sharhlar - BILOL Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0">Sharhlar</h3>
+</div>
+
+<div class="card card-custom">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-custom table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Foydalanuvchi</th>
+                        <th>Kurs</th>
+                        <th>Baho</th>
+                        <th style="max-width: 300px;">Matn</th>
+                        <th>Sana</th>
+                        <th class="text-end">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reviews %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 30px; height: 30px; font-size: 0.8rem;">
+                                    {{ r.user.first_name|first|default:r.user.username|first|upper }}
+                                </div>
+                                <a href="{% url 'dashboard:admin_user_detail' r.user.id %}" class="text-dark text-decoration-none fw-medium hover-primary">
+                                    {{ r.user.get_full_name|default:r.user.username }}
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                            <a href="{% url 'dashboard:admin_course_detail' r.course.id %}" class="text-dark text-decoration-none hover-primary">
+                                {{ r.course.title|truncatechars:30 }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="text-warning">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= r.rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td style="max-width: 300px;">
+                            <p class="mb-0 text-truncate" title="{{ r.comment }}">{{ r.comment }}</p>
+                        </td>
+                        <td class="text-muted">{{ r.created_at|date:"d.m.Y H:i" }}</td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#reviewModal{{ r.id }}" title="To'liq o'qish">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <a href="{% url 'dashboard:admin_delete_review' r.id %}" class="btn btn-sm btn-outline-danger" title="O'chirish" onclick="return confirm('Haqiqatan ham bu sharhni o\'chirasizmi?');">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+
+                    <!-- Review Modal -->
+                    <div class="modal fade" id="reviewModal{{ r.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content border-0 rounded-4 shadow">
+                                <div class="modal-header border-bottom-0 pt-4 px-4">
+                                    <h5 class="modal-title fw-bold">Sharh tafsilotlari</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body p-4 pt-0">
+                                    <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom">
+                                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                                            {{ r.user.first_name|first|default:r.user.username|first|upper }}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">{{ r.user.get_full_name|default:r.user.username }}</h6>
+                                            <small class="text-muted">{{ r.created_at|date:"d.m.Y H:i" }}</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="fw-bold mb-1">Kurs:</h6>
+                                        <p class="mb-0 text-primary">{{ r.course.title }}</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6 class="fw-bold mb-1">Baho:</h6>
+                                        <div class="text-warning fs-5">
+                                            {% for i in "12345"|make_list %}
+                                                {% if forloop.counter <= r.rating %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-2">Matn:</h6>
+                                        <div class="bg-light p-3 rounded">
+                                            {{ r.comment|linebreaks }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer border-top-0 pb-4 px-4">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Yopish</button>
+                                    <a href="{% url 'dashboard:admin_delete_review' r.id %}" class="btn btn-danger" onclick="return confirm('Haqiqatan ham bu sharhni o\'chirasizmi?');">
+                                        <i class="fas fa-trash me-2"></i> O'chirish
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="fas fa-comment-slash fs-1 mb-3 opacity-25"></i>
+                            <p class="mb-0">Sharhlar topilmadi</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

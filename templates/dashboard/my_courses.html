@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Kurslarim - BILOL{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="mb-4">
+            <h1 class="fw-bold mb-2">Kurslarim</h1>
+            <p class="text-muted">Barcha yozilgan kurslaringiz</p>
+        </div>
+        
+        <div class="d-flex gap-2 mb-4">
+            <button class="btn btn-primary">Barcha kurslar</button>
+            <button class="btn btn-outline-secondary">Davom etayotgan</button>
+            <button class="btn btn-outline-secondary">Tugatilgan</button>
+        </div>
+        
+        <div class="row g-4">
+            {% for enrollment in enrollments %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-custom h-100">
+                    <div class="position-relative">
+                        {% if enrollment.course.thumbnail %}
+                        <img src="{{ enrollment.course.thumbnail.url }}" alt="{{ enrollment.course.title }}" class="card-img-top course-card-img">
+                        {% else %}
+                        <div class="card-img-top course-card-img bg-primary d-flex align-items-center justify-content-center">
+                            <i class="fas fa-graduation-cap text-white fs-1"></i>
+                        </div>
+                        {% endif %}
+                        {% if enrollment.is_completed %}
+                        <span class="position-absolute top-0 end-0 m-3 badge bg-success">Tugatildi</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-2">{{ enrollment.course.title }}</h5>
+                        <p class="text-muted small mb-3">{{ enrollment.course.mentor.get_full_name }}</p>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span class="text-muted">Progress</span>
+                                <span class="fw-medium text-primary">{{ enrollment.progress }}%</span>
+                            </div>
+                            <div class="progress progress-custom">
+                                <div class="progress-bar bg-primary" style="width: {{ enrollment.progress }}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted small">{{ enrollment.enrolled_at|date:"d.m.Y" }}</span>
+                            {% if enrollment.is_completed %}
+                            <a href="{% url 'courses:detail' enrollment.course.slug %}" class="btn btn-outline-primary btn-sm">
+                                Qayta ko'rish
+                            </a>
+                            {% else %}
+                            <a href="{% url 'courses:continue' enrollment.course.slug %}" class="btn btn-primary btn-sm">
+                                Davom etish
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted mb-3">Hozircha kurslar yo'q.</p>
+                <a href="{% url 'courses:list' %}" class="btn btn-primary btn-custom">Kurslarni ko'rish</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

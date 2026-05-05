@@ -1,0 +1,83 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+
+{% block title %}Promo Kodlar - BILOL Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0">Promo Kodlar</h3>
+    <a href="{% url 'dashboard:admin_create_promocode' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i> Yangi yaratish
+    </a>
+</div>
+
+<div class="card card-custom">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-custom table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Kod</th>
+                        <th>Chegirma</th>
+                        <th>Muddat</th>
+                        <th>Foydalanildi</th>
+                        <th>Holati</th>
+                        <th class="text-end">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in promocodes %}
+                    <tr>
+                        <td>
+                            <div class="fw-bold fs-5 text-primary" style="font-family: monospace;">{{ p.code }}</div>
+                            {% if p.description %}
+                                <small class="text-muted d-block text-truncate" style="max-width: 200px;" title="{{ p.description }}">{{ p.description }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if p.discount_type == 'percentage' %}
+                                <span class="badge bg-success fs-6">{{ p.discount_value|floatformat:0 }}%</span>
+                            {% else %}
+                                <span class="badge bg-success fs-6">{{ p.discount_value|floatformat:0 }} so'm</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small class="d-block text-muted">Dan: {{ p.valid_from|date:"d.m.Y H:i" }}</small>
+                            <small class="d-block {% if p.is_valid %}text-dark{% else %}text-danger{% endif %}">Gacha: {{ p.valid_until|date:"d.m.Y H:i" }}</small>
+                        </td>
+                        <td>
+                            <div class="fw-bold">
+                                {{ p.used_count }} 
+                                {% if p.usage_limit %}
+                                    <span class="text-muted fw-normal">/ {{ p.usage_limit }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if not p.is_active %}
+                                <span class="badge badge-soft-danger">O'chirilgan</span>
+                            {% elif not p.is_valid %}
+                                <span class="badge badge-soft-warning">Muddati o'tgan</span>
+                            {% else %}
+                                <span class="badge badge-soft-success">Faol</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'dashboard:admin_toggle_promocode' p.id %}" class="btn btn-sm {% if p.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}" title="{% if p.is_active %}O'chirish{% else %}Faollashtirish{% endif %}">
+                                <i class="fas {% if p.is_active %}fa-ban{% else %}fa-check{% endif %}"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="fas fa-ticket-alt fs-1 mb-3 opacity-25"></i>
+                            <p class="mb-0">Promo kodlar topilmadi</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

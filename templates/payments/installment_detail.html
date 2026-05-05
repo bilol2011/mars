@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Muddatli to'lov - BILOL{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'courses:home' %}" class="text-decoration-none">Bosh sahifa</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'payments:history' %}" class="text-decoration-none">To'lov tarixi</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Muddatli to'lov</li>
+            </ol>
+        </nav>
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card card-custom mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="fw-bold mb-0">Muddatli to'lov ma'lumotlari</h2>
+                            <span class="badge {% if payment.status == 'paid' %}bg-success{% elif payment.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                {{ payment.get_status_display }}
+                            </span>
+                        </div>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <p class="text-muted small mb-1">Kurs</p>
+                                <p class="fw-bold">{{ payment.course.title }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="text-muted small mb-1">Jami summa</p>
+                                <p class="fw-bold">{{ payment.amount|floatformat:0 }} so'm</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="text-muted small mb-1">Muddat</p>
+                                <p class="fw-bold">{{ payment.payment_plan.months }} oy</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="text-muted small mb-1">Oylik to'lov</p>
+                                <p class="fw-bold">{{ payment.payment_plan.get_monthly_payment|floatformat:0 }} so'm</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card card-custom">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4">To'lov jadvali</h5>
+                        
+                        <div class="vstack gap-3">
+                            {% for installment in installments %}
+                            <div class="p-3 rounded {% if installment.is_paid %}bg-success bg-opacity-10{% elif installment.is_overdue %}bg-danger bg-opacity-10{% else %}bg-light{% endif %}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p class="fw-bold mb-1">{{ installment.order }}-oy to'lov</p>
+                                        <p class="text-muted small">Due: {{ installment.due_date|date:"d.m.Y" }}</p>
+                                    </div>
+                                    <div class="text-end">
+                                        <p class="fw-bold mb-1">{{ installment.amount|floatformat:0 }} so'm</p>
+                                        <span class="badge {% if installment.is_paid %}bg-success{% elif installment.is_overdue %}bg-danger{% else %}bg-warning{% endif %}">
+                                            {% if installment.is_paid %}To'landi{% elif installment.is_overdue %}Kechikdi{% else %}Kutilmoqda{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Sharh qoldirish - {{ course.title }}{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'courses:detail' course.slug %}" class="text-decoration-none">{{ course.title }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Sharh qoldirish</li>
+                    </ol>
+                </nav>
+                
+                <div class="card card-custom">
+                    <div class="card-body p-4">
+                        <h2 class="fw-bold mb-4">Sharh qoldirish</h2>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <div class="mb-4">
+                                <label class="form-label">Reyting</label>
+                                <div class="rating-input">
+                                    {% for i in '12345' %}
+                                    <button type="button" class="btn btn-link text-3xl text-muted hover-warning" data-rating="{{ i }}">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    {% endfor %}
+                                </div>
+                                <input type="hidden" name="rating" id="rating-input" value="5">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="comment" class="form-label">Sharh</label>
+                                <textarea name="comment" rows="5" class="form-control" placeholder="Kurs haqida fikringizni yozing..."></textarea>
+                            </div>
+                            
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'courses:detail' course.slug %}" class="btn btn-outline-secondary">Bekor qilish</a>
+                                <button type="submit" class="btn btn-primary btn-custom">Yuborish</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

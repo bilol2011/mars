@@ -1,0 +1,212 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+
+{% block title %}Foydalanuvchi ma'lumotlari - BILOL Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0">Foydalanuvchi profili</h3>
+    <a href="{% url 'dashboard:admin_users' %}" class="btn btn-outline-secondary">Orqaga</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card card-custom mb-4 text-center">
+            <div class="card-body py-5">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px; font-size: 2.5rem; font-weight: bold;">
+                    {{ target_user.first_name|first|default:target_user.username|first|upper }}
+                </div>
+                <h4 class="fw-bold mb-1">{{ target_user.get_full_name|default:target_user.username }}</h4>
+                <p class="text-muted mb-3">@{{ target_user.username }}</p>
+                
+                <div class="d-flex justify-content-center gap-2 mb-4">
+                    {% if target_user.is_active %}
+                        <span class="badge badge-soft-success px-3 py-2 rounded-pill">Faol</span>
+                    {% else %}
+                        <span class="badge badge-soft-danger px-3 py-2 rounded-pill">Bloklangan</span>
+                    {% endif %}
+                    {% if target_user.is_staff %}
+                        <span class="badge badge-soft-primary px-3 py-2 rounded-pill">Admin</span>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="{% url 'dashboard:admin_block_user' target_user.id %}" class="btn {% if target_user.is_active %}btn-outline-warning{% else %}btn-success{% endif %} w-50">
+                        <i class="fas {% if target_user.is_active %}fa-ban{% else %}fa-check{% endif %} me-2"></i> {% if target_user.is_active %}Bloklash{% else %}Faollashtirish{% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-custom">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h6 class="fw-bold mb-0">Ma'lumotlar</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0 vstack gap-3">
+                    <li class="d-flex align-items-center gap-3">
+                        <div class="bg-light text-primary rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Email</small>
+                            <span class="fw-medium">{{ target_user.email }}</span>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-center gap-3">
+                        <div class="bg-light text-primary rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Telefon</small>
+                            <span class="fw-medium">{{ target_user.phone_number|default:"Kiritilmagan" }}</span>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-center gap-3">
+                        <div class="bg-light text-primary rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Ro'yxatdan o'tgan sana</small>
+                            <span class="fw-medium">{{ target_user.created_at|date:"d.m.Y H:i" }}</span>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-center gap-3">
+                        <div class="bg-light text-primary rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Hamyon balansi</small>
+                            <span class="fw-medium text-success">{{ wallet.balance|default:0|floatformat:0 }} so'm</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <ul class="nav nav-pills mb-4 gap-2" id="user-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active bg-white shadow-sm" id="courses-tab" data-bs-toggle="tab" data-bs-target="#courses" type="button" role="tab" style="color: var(--dark-color); border-radius: 10px;">
+                    <i class="fas fa-book me-2"></i>Kurslar ({{ enrollments.count }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link bg-white shadow-sm" id="payments-tab" data-bs-toggle="tab" data-bs-target="#payments" type="button" role="tab" style="color: var(--dark-color); border-radius: 10px;">
+                    <i class="fas fa-money-bill-wave me-2"></i>To'lovlar ({{ transactions.count }})
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="user-tabs-content">
+            <!-- Courses Tab -->
+            <div class="tab-pane fade show active" id="courses" role="tabpanel">
+                <div class="card card-custom">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-custom table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Kurs nomi</th>
+                                        <th>Sana</th>
+                                        <th>Progress</th>
+                                        <th>Holati</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for e in enrollments %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'dashboard:admin_course_detail' e.course.id %}" class="fw-bold text-dark text-decoration-none hover-primary">{{ e.course.title }}</a>
+                                        </td>
+                                        <td>{{ e.enrolled_at|date:"d.m.Y" }}</td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="progress flex-grow-1" style="height: 6px;">
+                                                    <div class="progress-bar bg-success" style="width: {{ e.progress }}%"></div>
+                                                </div>
+                                                <small>{{ e.progress }}%</small>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if e.is_completed %}
+                                                <span class="badge badge-soft-success">Tugatilgan</span>
+                                            {% else %}
+                                                <span class="badge badge-soft-warning">Jarayonda</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">Kurslar topilmadi</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Tab -->
+            <div class="tab-pane fade" id="payments" role="tabpanel">
+                <div class="card card-custom">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-custom table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Turi</th>
+                                        <th>Miqdor</th>
+                                        <th>Holati</th>
+                                        <th>Sana</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for t in transactions %}
+                                    <tr>
+                                        <td>#{{ t.id }}</td>
+                                        <td>
+                                            {% if t.transaction_type == 'deposit' %}
+                                                <span class="badge badge-soft-info">To'ldirish</span>
+                                            {% else %}
+                                                <span class="badge badge-soft-primary">Xarid</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="fw-bold {% if t.transaction_type == 'deposit' %}text-success{% else %}text-danger{% endif %}">
+                                            {% if t.transaction_type == 'deposit' %}+{% else %}-{% endif %}{{ t.amount|floatformat:0 }} so'm
+                                        </td>
+                                        <td>
+                                            {% if t.status == 'success' %}
+                                                <span class="badge badge-soft-success">Muvaffaqiyatli</span>
+                                            {% elif t.status == 'pending' %}
+                                                <span class="badge badge-soft-warning">Kutilmoqda</span>
+                                            {% else %}
+                                                <span class="badge badge-soft-danger">Bekor qilingan</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ t.created_at|date:"d.m.Y H:i" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">Tranzaksiyalar topilmadi</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .nav-pills .nav-link.active {
+        background-color: var(--primary-color) !important;
+        color: white !important;
+    }
+</style>
+{% endblock %}

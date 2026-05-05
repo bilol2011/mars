@@ -1,0 +1,103 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+
+{% block title %}To'lovlar - BILOL Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0">To'lovlar tarixi</h3>
+</div>
+
+<div class="card card-custom mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Dan</label>
+                <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Gacha</label>
+                <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Holati</label>
+                <select name="status" class="form-select">
+                    <option value="">Barchasi</option>
+                    <option value="paid" {% if status == 'paid' %}selected{% endif %}>To'langan</option>
+                    <option value="pending" {% if status == 'pending' %}selected{% endif %}>Kutilmoqda</option>
+                    <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>Bekor qilingan</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter me-2"></i>Filtr</button>
+                {% if date_from or date_to or status %}
+                <a href="{% url 'dashboard:admin_payments' %}" class="btn btn-outline-secondary"><i class="fas fa-times"></i></a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card card-custom">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-custom table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Foydalanuvchi</th>
+                        <th>Kurs</th>
+                        <th>Miqdor</th>
+                        <th>Usul</th>
+                        <th>Holati</th>
+                        <th>Sana</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in payments %}
+                    <tr>
+                        <td class="text-muted fw-medium">#{{ p.id }}</td>
+                        <td>
+                            <a href="{% url 'dashboard:admin_user_detail' p.user.id %}" class="text-dark text-decoration-none hover-primary fw-medium">
+                                {{ p.user.get_full_name|default:p.user.username }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'dashboard:admin_course_detail' p.course.id %}" class="text-dark text-decoration-none hover-primary">
+                                {{ p.course.title|truncatechars:30 }}
+                            </a>
+                        </td>
+                        <td class="fw-bold">{{ p.amount|floatformat:0 }} so'm</td>
+                        <td>
+                            {% if p.payment_method == 'payme' %}
+                                <span class="badge bg-info text-white"><i class="fas fa-credit-card me-1"></i>Payme</span>
+                            {% elif p.payment_method == 'click' %}
+                                <span class="badge bg-primary"><i class="fas fa-credit-card me-1"></i>Click</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ p.get_payment_method_display|default:"Boshqa" }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if p.status == 'paid' %}
+                                <span class="badge badge-soft-success">To'langan</span>
+                            {% elif p.status == 'pending' %}
+                                <span class="badge badge-soft-warning">Kutilmoqda</span>
+                            {% else %}
+                                <span class="badge badge-soft-danger">Bekor qilingan</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ p.created_at|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-receipt fs-1 mb-3 opacity-25"></i>
+                            <p class="mb-0">To'lovlar topilmadi</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

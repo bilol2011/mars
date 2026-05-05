@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Sertifikatlar - BILOL{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="mb-4">
+            <h1 class="fw-bold mb-2">Sertifikatlar</h1>
+            <p class="text-muted">Tugatgan kurslaringiz uchun sertifikatlar</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for certificate in certificates %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-custom h-100">
+                    <div class="bg-primary p-4 text-center">
+                        <i class="fas fa-certificate text-white fs-1 mb-3"></i>
+                        <h5 class="fw-bold text-white">{{ certificate.enrollment.course.title }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="vstack gap-2 mb-3">
+                            <div class="d-flex justify-content-between text-muted">
+                                <span>O'quvchi:</span>
+                                <span class="fw-medium">{{ certificate.enrollment.user.get_full_name }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted">
+                                <span>Kurs:</span>
+                                <span class="fw-medium">{{ certificate.enrollment.course.title }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted">
+                                <span>Tugatilgan sana:</span>
+                                <span class="fw-medium">{{ certificate.issued_date|date:"d.m.Y" }}</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary w-full btn-custom">
+                            <i class="fas fa-download me-2"></i>Yuklab olish
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-certificate text-muted fs-1 mb-3"></i>
+                <p class="text-muted mb-3">Hozircha sertifikatlar yo'q.</p>
+                <a href="{% url 'dashboard:my_courses' %}" class="btn btn-primary btn-custom">Kurslarim</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

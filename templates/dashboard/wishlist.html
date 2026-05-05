@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Saqlanganlar - BILOL{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="mb-4">
+            <h1 class="fw-bold mb-2">Saqlanganlar</h1>
+            <p class="text-muted">Keyinroq o'qish uchun saqlangan kurslaringiz</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for item in wishlist_items %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-custom h-100">
+                    {% if item.course.thumbnail %}
+                    <img src="{{ item.course.thumbnail.url }}" alt="{{ item.course.title }}" class="card-img-top course-card-img">
+                    {% else %}
+                    <div class="card-img-top course-card-img bg-primary d-flex align-items-center justify-content-center">
+                        <i class="fas fa-graduation-cap text-white fs-1"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <span class="badge bg-primary">{{ item.course.category.name }}</span>
+                        </div>
+                        <h5 class="fw-bold mb-2">{{ item.course.title }}</h5>
+                        <p class="text-muted small mb-3">{{ item.course.short_description|truncatewords:15 }}</p>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="rating-stars">
+                                {% for i in ''|center:5 %}
+                                <i class="fas fa-star{% if forloop.counter > item.course.rating %}-o text-muted{% endif %}"></i>
+                                {% endfor %}
+                                <span class="ms-1 small text-muted">({{ item.course.rating }})</span>
+                            </div>
+                            <span class="small text-muted">{{ item.course.duration }}</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                {% if item.course.discount_price %}
+                                <span class="fw-bold text-primary fs-5">{{ item.course.discount_price|floatformat:0 }} so'm</span>
+                                {% else %}
+                                <span class="fw-bold text-primary fs-5">{{ item.course.price|floatformat:0 }} so'm</span>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'dashboard:remove_wishlist' item.course.slug %}" class="text-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-heart text-muted fs-1 mb-3"></i>
+                <p class="text-muted mb-3">Saqlangan kurslar yo'q.</p>
+                <a href="{% url 'courses:list' %}" class="btn btn-primary btn-custom">Kurslarni ko'rish</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

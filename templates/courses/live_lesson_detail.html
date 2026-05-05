@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ live_lesson.title }} - BILOL{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'courses:home' %}" class="text-decoration-none">Bosh sahifa</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'courses:live_lessons' %}" class="text-decoration-none">Jonli darslar</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ live_lesson.title }}</li>
+            </ol>
+        </nav>
+        
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card card-custom mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <span class="badge {% if live_lesson.status == 'scheduled' %}bg-primary{% elif live_lesson.status == 'live' %}bg-danger{% elif live_lesson.status == 'ended' %}bg-secondary{% else %}bg-warning{% endif %} mb-2">
+                                    {{ live_lesson.get_status_display }}
+                                </span>
+                                <h2 class="fw-bold mb-2">{{ live_lesson.title }}</h2>
+                                <p class="text-muted mb-0">{{ live_lesson.course.title }}</p>
+                            </div>
+                            {% if live_lesson.is_live_now %}
+                            <a href="{% url 'courses:live_lesson_join' live_lesson.id %}" class="btn btn-danger btn-lg">
+                                <i class="fas fa-video me-2"></i>Darsga qo'shilish
+                            </a>
+                            {% endif %}
+                        </div>
+                        
+                        {% if live_lesson.description %}
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-2">Tavsif</h5>
+                            <p class="text-muted">{{ live_lesson.description }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="bg-light rounded p-3">
+                                    <p class="text-muted small mb-1">
+                                        <i class="fas fa-calendar me-2"></i>Sana va vaqt
+                                    </p>
+                                    <p class="fw-bold mb-0">{{ live_lesson.scheduled_time|date:"d.m.Y H:i" }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="bg-light rounded p-3">
+                                    <p class="text-muted small mb-1">
+                                        <i class="fas fa-clock me-2"></i>Davomiyligi
+                                    </p>
+                                    <p class="fw-bold mb-0">{{ live_lesson.duration }} daqiqa</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="bg-light rounded p-3">
+                                    <p class="text-muted small mb-1">
+                                        <i class="fas fa-user me-2"></i>Ustoz
+                                    </p>
+                                    <p class="fw-bold mb-0">{{ live_lesson.mentor.get_full_name }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="bg-light rounded p-3">
+                                    <p class="text-muted small mb-1">
+                                        <i class="fas fa-users me-2"></i>Qatnashchilar
+                                    </p>
+                                    <p class="fw-bold mb-0">{{ live_lesson.participants.count }}/{{ live_lesson.max_participants }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if live_lesson.meeting_link %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Tashqi video konferensiya platformasi orqali o'tkaziladi.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card card-custom">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">Qatnashchilar</h5>
+                        
+                        <div class="list-group list-group-flush">
+                            {% for participant in live_lesson.participants.all %}
+                            <div class="list-group-item d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    {% if participant.user.avatar %}
+                                    <img src="{{ participant.user.avatar.url }}" alt="{{ participant.user.get_full_name }}" class="rounded-circle" width="40" height="40">
+                                    {% else %}
+                                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" width="40" height="40">
+                                        {{ participant.user.get_full_name|first|upper }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-0">{{ participant.user.get_full_name }}</h6>
+                                    <small class="text-muted">{{ participant.joined_at|date:"H:i" }}</small>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="list-group-item text-center text-muted">
+                                Hozircha qatnashchilar yo'q
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

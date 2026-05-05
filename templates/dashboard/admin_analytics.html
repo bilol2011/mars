@@ -1,0 +1,218 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+
+{% block title %}Dashboard - BILOL Admin{% endblock %}
+
+{% block content %}
+<section class="section-padding">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">Admin Analytics Dashboard</h2>
+            <a href="{% url 'dashboard:home' %}" class="btn btn-outline-primary">Orqaga</a>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-custom bg-primary text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-2">Jami foydalanuvchilar</h6>
+                                <h3 class="fw-bold mb-0">{{ total_users }}</h3>
+                            </div>
+                            <i class="fas fa-users fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-custom bg-success text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-2">Jami kurslar</h6>
+                                <h3 class="fw-bold mb-0">{{ total_courses }}</h3>
+                            </div>
+                            <i class="fas fa-book fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-custom bg-info text-white h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-2">Jami yozilishlar</h6>
+                                <h3 class="fw-bold mb-0">{{ total_enrollments }}</h3>
+                            </div>
+                            <i class="fas fa-user-graduate fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-custom bg-warning text-dark h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-2">Jami daromad</h6>
+                                <h3 class="fw-bold mb-0">{{ total_revenue|floatformat:0 }} so'm</h3>
+                            </div>
+                            <i class="fas fa-chart-line fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Stats -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="card card-custom h-100">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3">Faol foydalanuvchilar (30 kun)</h5>
+                        <h3 class="display-5 fw-bold text-primary">{{ active_users }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card card-custom h-100">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-3">Hamyonlar balansi</h5>
+                        <div class="row">
+                            <div class="col-6">
+                                <p class="text-muted mb-1">Jami balans</p>
+                                <h5 class="fw-bold text-success">{{ wallet_summary.total_balance|floatformat:0 }} so'm</h5>
+                            </div>
+                            <div class="col-6">
+                                <p class="text-muted mb-1">O'rtacha balans</p>
+                                <h5 class="fw-bold text-info">{{ wallet_summary.avg_balance|floatformat:0 }} so'm</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Courses -->
+        <div class="card card-custom mb-5">
+            <div class="card-header bg-white">
+                <h5 class="fw-bold mb-0">Top 10 Kurslar</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Kurs nomi</th>
+                                <th>Kategoriya</th>
+                                <th>Narx</th>
+                                <th>Yozilganlar</th>
+                                <th>Reyting</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in top_courses %}
+                            <tr>
+                                <td>{{ course.title }}</td>
+                                <td>{{ course.category.name }}</td>
+                                <td>{{ course.get_discounted_price|floatformat:0 }} so'm</td>
+                                <td>{{ course.enrollment_count }}</td>
+                                <td>{{ course.rating }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Kurslar topilmadi</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Payments -->
+        <div class="card card-custom mb-5">
+            <div class="card-header bg-white">
+                <h5 class="fw-bold mb-0">So'nggi to'lovlar</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Foydalanuvchi</th>
+                                <th>Kurs</th>
+                                <th>Miqdor</th>
+                                <th>Usul</th>
+                                <th>Holat</th>
+                                <th>Sana</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in recent_payments %}
+                            <tr>
+                                <td>{{ payment.user.email }}</td>
+                                <td>{{ payment.course.title }}</td>
+                                <td>{{ payment.amount|floatformat:0 }} so'm</td>
+                                <td>{{ payment.get_payment_method_display|default:"-" }}</td>
+                                <td>
+                                    <span class="badge {% if payment.status == 'paid' %}bg-success{% elif payment.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                        {{ payment.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>{{ payment.created_at|date:"d.m.Y H:i" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">To'lovlar topilmadi</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Daily Analytics -->
+        <div class="card card-custom">
+            <div class="card-header bg-white">
+                <h5 class="fw-bold mb-0">Kunlik statistika (oxirgi 30 kun)</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Sana</th>
+                                <th>Foydalanuvchilar</th>
+                                <th>Faol</th>
+                                <th>Yangi foydalanuvchilar</th>
+                                <th>Yozilishlar</th>
+                                <th>Daromad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for analytics in daily_analytics %}
+                            <tr>
+                                <td>{{ analytics.date|date:"d.m.Y" }}</td>
+                                <td>{{ analytics.total_users }}</td>
+                                <td>{{ analytics.active_users }}</td>
+                                <td>{{ analytics.new_users }}</td>
+                                <td>{{ analytics.new_enrollments }}</td>
+                                <td>{{ analytics.total_revenue|floatformat:0 }} so'm</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Ma'lumotlar topilmadi</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

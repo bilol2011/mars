@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Mening xaridlarim - BILOL{% endblock %}
+
+{% block extra_css %}
+<style>
+.shop-sidebar {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.shop-sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.shop-sidebar-link:hover {
+    background: #f8f9fa;
+}
+
+.shop-sidebar-link.active {
+    background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
+    color: white;
+}
+
+.shop-sidebar-link i {
+    width: 24px;
+    margin-right: 12px;
+}
+
+.purchase-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+}
+
+.purchase-item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 32px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <div class="shop-sidebar">
+                <a href="{% url 'dashboard:home' %}" class="shop-sidebar-link">
+                    <i class="fas fa-home"></i>
+                    Asosiy
+                </a>
+                <a href="{% url 'dashboard:my_courses' %}" class="shop-sidebar-link">
+                    <i class="fas fa-book"></i>
+                    Kurslarim
+                </a>
+                <a href="#" class="shop-sidebar-link">
+                    <i class="fas fa-graduation-cap"></i>
+                    Eduverse
+                </a>
+                <a href="#" class="shop-sidebar-link">
+                    <i class="fas fa-blog"></i>
+                    Blog
+                </a>
+                <a href="{% url 'accounts:wallet' %}" class="shop-sidebar-link">
+                    <i class="fas fa-credit-card"></i>
+                    Hisob to'ldirish
+                </a>
+                <a href="{% url 'accounts:shop' %}" class="shop-sidebar-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    Bilol Shop
+                </a>
+                <a href="{% url 'accounts:my_purchases' %}" class="shop-sidebar-link active">
+                    <i class="fas fa-box"></i>
+                    Mening xaridlarim
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <h2 class="fw-bold mb-4">Mening xaridlarim</h2>
+            
+            {% for purchase in purchases %}
+            <div class="purchase-card">
+                <div class="d-flex align-items-center">
+                    {% if purchase.item.image %}
+                    <img src="{{ purchase.item.image.url }}" alt="{{ purchase.item.name }}" class="purchase-item-image me-3">
+                    {% else %}
+                    <div class="purchase-item-image me-3">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="flex-grow-1">
+                        <h5 class="fw-bold mb-1">{{ purchase.item.name }}</h5>
+                        <p class="text-muted small mb-1">{{ purchase.item.description|truncatewords:15 }}</p>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-coins me-1"></i>{{ purchase.coins_spent }} coin
+                            </span>
+                            <span class="text-muted small">
+                                <i class="fas fa-calendar me-1"></i>{{ purchase.created_at|date:"d.m.Y H:i" }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-end">
+                        <span class="badge bg-success">Bajarildi</span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-light text-center">
+                <i class="fas fa-box-open fa-2x text-muted mb-2"></i>
+                <p class="text-muted mb-0">Hozircha xaridlar yo'q</p>
+                <a href="{% url 'accounts:shop' %}" class="btn btn-primary btn-sm mt-2">
+                    Do'konga o'tish
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

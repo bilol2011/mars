@@ -1,0 +1,97 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+
+{% block title %}Kurslar - BILOL Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0">Kurslar</h3>
+    <a href="/admin/courses/course/add/" class="btn btn-primary" target="_blank">
+        <i class="fas fa-plus me-2"></i> Yangi kurs qo'shish
+    </a>
+</div>
+
+<div class="card card-custom">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-custom table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Kurs</th>
+                        <th>Kategoriya</th>
+                        <th>Narxi</th>
+                        <th>O'quvchilar</th>
+                        <th>Holati</th>
+                        <th class="text-end">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in courses %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                {% if c.thumbnail %}
+                                <img src="{{ c.thumbnail.url }}" alt="{{ c.title }}" class="rounded" style="width: 60px; height: 40px; object-fit: cover;">
+                                {% else %}
+                                <div class="bg-light text-primary rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 40px;">
+                                    <i class="fas fa-video"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <h6 class="mb-0 fw-bold">{{ c.title|truncatechars:40 }}</h6>
+                                    <small class="text-muted">{{ c.mentor.get_full_name }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ c.category.name }}</td>
+                        <td>
+                            {% if c.is_free %}
+                                <span class="text-success fw-bold">Bepul</span>
+                            {% else %}
+                                <div class="fw-bold">{{ c.get_discounted_price|floatformat:0 }} so'm</div>
+                                {% if c.discount_percent > 0 %}
+                                    <small class="text-muted text-decoration-line-through">{{ c.price|floatformat:0 }} so'm</small>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-users text-muted"></i>
+                                <span>{{ c.enrollments.count }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column gap-1">
+                                {% if c.is_published %}
+                                    <span class="badge badge-soft-success">Nashr qilingan</span>
+                                {% else %}
+                                    <span class="badge badge-soft-warning">Qoralama</span>
+                                {% endif %}
+                                
+                                {% if c.is_featured %}
+                                    <span class="badge badge-soft-info"><i class="fas fa-star text-warning me-1"></i>Top kurs</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'dashboard:admin_course_detail' c.id %}" class="btn btn-sm btn-outline-primary" title="Ko'rish">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'dashboard:admin_toggle_featured' c.id %}" class="btn btn-sm {% if c.is_featured %}btn-warning{% else %}btn-outline-warning{% endif %}" title="Top kurs qilish">
+                                <i class="fas fa-star"></i>
+                            </a>
+                            <a href="/admin/courses/course/{{ c.id }}/change/" target="_blank" class="btn btn-sm btn-outline-secondary" title="Tahrirlash">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">Kurslar topilmadi</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

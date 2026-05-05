@@ -1,0 +1,328 @@
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Search results styling */
+.search-results {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 0.5rem 0;
+}
+
+.search-results a {
+    color: inherit;
+}
+
+.search-results a:hover .p-3 {
+    background-color: #f8f9fa;
+}
+
+.search-results .border-bottom:last-child {
+    border-bottom: none;
+}
+
+/* Custom card styles */
+.card-custom {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-custom:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2);
+}
+
+/* Hero section */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 5rem 0;
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.hero-section p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+/* Course card image */
+.course-card-img {
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+/* Rating stars */
+.rating-stars {
+    color: #ffc107;
+}
+
+/* Progress bar */
+.progress-custom {
+    height: 8px;
+    border-radius: 4px;
+}
+
+/* Badge styles */
+.badge-custom {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+/* Button styles */
+.btn-custom {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Navbar */
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* Footer */
+footer a {
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: white !important;
+}
+
+/* Form styles */
+.form-control {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #dee2e6;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Table styles */
+.table-custom {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+/* Alert styles */
+.alert-custom {
+    border-radius: 0.5rem;
+    border: none;
+}
+
+/* Section spacing */
+.section-padding {
+    padding: 4rem 0;
+}
+
+/* Feature icon */
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+/* Installment card */
+.installment-card {
+    border: 2px solid #dee2e6;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.installment-card:hover,
+.installment-card.active {
+    border-color: var(--primary-color);
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+/* Stats card */
+.stats-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+/* Review card */
+.review-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+/* Avatar */
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-lg {
+    width: 100px;
+    height: 100px;
+}
+
+/* Notification badge */
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    background-color: var(--danger-color);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Loading spinner */
+.spinner-custom {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-section p {
+        font-size: 1rem;
+    }
+    
+    .section-padding {
+        padding: 2rem 0;
+    }
+}
+
+/* Smooth scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Gamification Badge Styles */
+.badge-earned,
+.badge-locked {
+    width: 80px;
+    padding: 10px;
+}
+
+.badge-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto;
+}
+
+/* Level badges */
+.level-bronze { color: #cd7f32; }
+.level-silver { color: #c0c0c0; }
+.level-gold { color: #ffd700; }
+.level-platinum { color: #e5e4e2; }
+.level-diamond { color: #b9f2ff; }
+
+/* Hover states */
+.hover-bg-light:hover {
+    background-color: #f8f9fa !important;
+}
+
+.hover-primary:hover {
+    color: var(--primary-color) !important;
+}
+
+/* Animation for points earned */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.points-animation {
+    animation: pulse 0.5s ease-in-out;
+}
+
+/* Progress bar animation */
+@keyframes progress {
+    from { width: 0; }
+}
+
+.progress-bar-animated {
+    animation: progress 1s ease-out;
+}
+
+/* Streak fire animation */
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.streak-fire {
+    animation: flicker 1s ease-in-out infinite;
+}

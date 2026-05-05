@@ -1,0 +1,78 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+
+{% block title %}Yangi Promo Kod - BILOL Admin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0">Yangi Promo Kod</h3>
+            <a href="{% url 'dashboard:admin_promocodes' %}" class="btn btn-outline-secondary">Orqaga</a>
+        </div>
+
+        <div class="card card-custom border-0 shadow">
+            <div class="card-body p-4 p-md-5">
+                <form method="post" action="{% url 'dashboard:admin_create_promocode' %}">
+                    {% csrf_token %}
+                    
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label for="code" class="form-label fw-bold">Kod <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control text-uppercase" id="code" name="code" required placeholder="Masalan: NEWYEAR2024" style="font-family: monospace;">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="discount_type" class="form-label fw-bold">Chegirma turi <span class="text-danger">*</span></label>
+                            <select class="form-select" id="discount_type" name="discount_type" required>
+                                <option value="percentage">Foiz (%)</option>
+                                <option value="fixed">Aniq summa (so'm)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="discount_value" class="form-label fw-bold">Chegirma miqdori <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="discount_value" name="discount_value" required min="1" step="0.01">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="max_discount" class="form-label fw-bold">Maksimal chegirma summasi <small class="text-muted fw-normal">(faqat foiz uchun)</small></label>
+                            <input type="number" class="form-control" id="max_discount" name="max_discount" min="0">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="min_purchase" class="form-label fw-bold">Minimal xarid summasi</label>
+                            <input type="number" class="form-control" id="min_purchase" name="min_purchase" value="0" min="0">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="usage_limit" class="form-label fw-bold">Foydalanish limiti <small class="text-muted fw-normal">(bo'sh bo'lsa cheksiz)</small></label>
+                            <input type="number" class="form-control" id="usage_limit" name="usage_limit" min="1">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="valid_from" class="form-label fw-bold">Boshlanish vaqti <span class="text-danger">*</span></label>
+                            <input type="datetime-local" class="form-control" id="valid_from" name="valid_from" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="valid_until" class="form-label fw-bold">Tugash vaqti <span class="text-danger">*</span></label>
+                            <input type="datetime-local" class="form-control" id="valid_until" name="valid_until" required>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="description" class="form-label fw-bold">Tavsif</label>
+                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Ushbu promo kod nima uchun yaratilgani haqida qisqacha ma'lumot..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
+                            <i class="fas fa-save me-2"></i> Saqlash
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

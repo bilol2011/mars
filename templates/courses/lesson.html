@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ lesson.title }} - {{ course.title }}{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light min-vh-100">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-9">
+                <div class="card card-custom">
+                    <div class="card-body p-4">
+                        <!-- Video Player -->
+                        <div class="ratio ratio-16x9 mb-4 rounded overflow-hidden bg-dark">
+                            {% if lesson.video %}
+                            <video controls class="w-full" id="videoPlayer">
+                                <source src="{{ lesson.video.url }}" type="video/mp4">
+                            </video>
+                            {% elif lesson.video_url %}
+                            <iframe src="{{ lesson.get_embed_url }}" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                            {% else %}
+                            <div class="d-flex align-items-center justify-content-center h-100">
+                                <div class="text-center text-white">
+                                    <i class="fas fa-video fs-1 mb-3"></i>
+                                    <p>Video hozircha yo'q</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <h2 class="fw-bold mb-3">{{ lesson.title }}</h2>
+                        
+                        {% if lesson.description %}
+                        <p class="text-muted mb-4">{{ lesson.description }}</p>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between align-items-center text-muted mb-4">
+                            <span><i class="fas fa-clock me-2"></i>{{ lesson.duration }} daqiqa</span>
+                            {% if lesson.is_free %}
+                            <span class="text-success fw-medium">Bepul dars</span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Progress Tracking -->
+                        {% if enrollment and lesson_progress %}
+                        <div class="bg-light rounded p-3 mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold">Kurs progressi</span>
+                                <span class="text-primary fw-bold">{{ enrollment.progress }}%</span>
+                            </div>
+                            <div class="progress progress-custom mb-3">
+                                <div class="progress-bar bg-primary" style="width: {{ enrollment.progress }}%"></div>
+                            </div>
+                            
+                            {% if not lesson_progress.is_completed %}
+                            <form action="{% url 'courses:mark_complete' course_slug=course.slug lesson_id=lesson.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-check-circle me-2"></i>Darsni tugatildi deb belgilash
+                                </button>
+                            </form>
+                            {% else %}
+                            <div class="text-center text-success">
+                                <i class="fas fa-check-circle fs-4 mb-2"></i>
+                                <p class="fw-bold mb-0">Bu dars tugatildi!</p>
+                                <p class="small text-muted mb-0">+10 ball olganingiz</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3">
+                <div class="card card-custom sticky-top" style="top: 100px;">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold mb-3">Darslar</h6>
+                        
+                        {% if enrollment %}
+                        <div class="mb-3">
+                            <a href="{% url 'courses:continue' course.slug %}" class="btn btn-primary w-100 btn-sm">
+                                <i class="fas fa-play me-2"></i>Davom etish
+                            </a>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="vstack gap-2" style="max-height: 400px; overflow-y: auto;">
+                            {% for l in lessons %}
+                            <a href="{% url 'courses:lesson' course_slug=course.slug lesson_id=l.id %}" class="text-decoration-none p-2 rounded {% if l.id == lesson.id %}bg-primary text-white{% else %}bg-light hover-bg-secondary{% endif %}">
+                                <div class="d-flex align-items-start">
+                                    <span class="badge {% if l.id == lesson.id %}bg-light text-dark{% else %}bg-secondary{% endif %} me-2 flex-shrink-0">{{ l.order }}</span>
+                                    <div class="flex-grow-1">
+                                        <h6 class="fw-bold small mb-0">{{ l.title }}</h6>
+                                        <p class="small text-muted mb-0">{{ l.duration }} daqiqa</p>
+                                    </div>
+                                </div>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <a href="{% url 'courses:detail' course.slug %}" class="btn btn-outline-primary w-full">
+                            <i class="fas fa-arrow-left me-2"></i>Kursga qaytish
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

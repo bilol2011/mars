@@ -1,0 +1,102 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+
+{% block title %}E'lonlar - BILOL Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0">E'lonlar</h3>
+    <a href="{% url 'dashboard:admin_create_announcement' %}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i> Yangi e'lon
+    </a>
+</div>
+
+<div class="row g-4">
+    {% for a in announcements %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-custom h-100 {% if not a.is_active %}opacity-75{% endif %}">
+            <div class="card-header bg-white border-bottom-0 pt-4 d-flex justify-content-between align-items-start">
+                <div>
+                    {% if a.priority == 'high' %}
+                        <span class="badge bg-danger mb-2">Muhim</span>
+                    {% elif a.priority == 'medium' %}
+                        <span class="badge bg-warning mb-2">O'rtacha</span>
+                    {% else %}
+                        <span class="badge bg-info mb-2">Oddiy</span>
+                    {% endif %}
+                    
+                    {% if not a.is_active %}
+                        <span class="badge badge-soft-secondary mb-2 ms-1">Faol emas</span>
+                    {% endif %}
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                        <li>
+                            <a class="dropdown-item" href="{% url 'dashboard:admin_toggle_announcement' a.id %}">
+                                <i class="fas {% if a.is_active %}fa-eye-slash text-warning{% else %}fa-eye text-success{% endif %} me-2"></i>
+                                {% if a.is_active %}Yashirish{% else %}Ko'rsatish{% endif %}
+                            </a>
+                        </li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#announcementModal{{ a.id }}"><i class="fas fa-search me-2"></i> To'liq ko'rish</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body pt-0 flex-grow-1">
+                <h5 class="fw-bold mb-2">{{ a.title }}</h5>
+                <p class="text-muted small mb-0">{{ a.content|truncatewords:20 }}</p>
+            </div>
+            <div class="card-footer bg-white border-top text-muted small py-3">
+                <i class="far fa-clock me-1"></i> {{ a.created_at|date:"d.m.Y H:i" }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcement Modal -->
+    <div class="modal fade" id="announcementModal{{ a.id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-bottom-0 pt-4 px-4">
+                    <h5 class="modal-title fw-bold">E'lon tafsilotlari</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 pt-0">
+                    <div class="mb-3">
+                        {% if a.priority == 'high' %}
+                            <span class="badge bg-danger">Muhim</span>
+                        {% elif a.priority == 'medium' %}
+                            <span class="badge bg-warning">O'rtacha</span>
+                        {% else %}
+                            <span class="badge bg-info">Oddiy</span>
+                        {% endif %}
+                    </div>
+                    <h4 class="fw-bold mb-3">{{ a.title }}</h4>
+                    <div class="bg-light p-3 rounded mb-3">
+                        {{ a.content|linebreaks }}
+                    </div>
+                    <p class="text-muted small mb-0">
+                        <i class="far fa-clock me-1"></i> Yaratilgan vaqt: {{ a.created_at|date:"d.m.Y H:i" }}
+                    </p>
+                </div>
+                <div class="modal-footer border-top-0 pb-4 px-4">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Yopish</button>
+                    <a href="{% url 'dashboard:admin_toggle_announcement' a.id %}" class="btn {% if a.is_active %}btn-warning{% else %}btn-success{% endif %}">
+                        <i class="fas {% if a.is_active %}fa-eye-slash{% else %}fa-eye{% endif %} me-2"></i>
+                        {% if a.is_active %}Yashirish{% else %}Ko'rsatish{% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <i class="fas fa-bullhorn fs-1 mb-3 text-muted opacity-25"></i>
+        <h5 class="text-muted mb-3">Hozircha e'lonlar yo'q</h5>
+        <a href="{% url 'dashboard:admin_create_announcement' %}" class="btn btn-primary">
+            Birinchi e'lonni yaratish
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

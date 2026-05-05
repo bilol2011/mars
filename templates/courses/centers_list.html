@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "O'quv Markazlari - BILOL" %}{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'courses:home' %}" class="text-decoration-none">{% trans "Bosh sahifa" %}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{% trans "O'quv Markazlari" %}</li>
+            </ol>
+        </nav>
+        
+        <div class="text-center mb-5">
+            <h1 class="fw-bold mb-2">{% trans "O'quv Markazlari" %}</h1>
+            <p class="text-muted">{% trans "Eng yaxshi o'quv markazlari bilan tanishing" %}</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for center in centers %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-custom h-100">
+                    {% if center.cover_image %}
+                    <img src="{{ center.cover_image.url }}" alt="{{ center.name }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-building fa-3x text-primary"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if center.logo %}
+                            <img src="{{ center.logo.url }}" alt="{{ center.name }}" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                <i class="fas fa-building text-primary"></i>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <h5 class="fw-bold mb-0">{{ center.name }}</h5>
+                                <p class="text-muted small mb-0"><i class="fas fa-map-marker-alt me-1"></i>{{ center.city }}</p>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-3">{{ center.short_description }}</p>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-star text-warning me-1"></i>
+                                <span class="fw-bold">{{ center.rating }}</span>
+                                <span class="text-muted small ms-1">({{ center.reviews_count }})</span>
+                            </div>
+                            <div class="text-muted small">
+                                <i class="fas fa-users me-1"></i>{{ center.students_count }}
+                            </div>
+                        </div>
+                        <a href="{% url 'courses:center_detail' center.slug %}" class="btn btn-primary w-100">
+                            {% trans "Batafsil" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-building fa-3x text-muted mb-3"></i>
+                <p class="text-muted">{% trans "O'quv markazlari hozircha yo'q." %}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

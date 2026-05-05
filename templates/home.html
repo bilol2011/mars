@@ -1,0 +1,407 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "BILOL - Online Kurslar Platformasi" %}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-4">{% trans "Kelajagingizni Bilol bilan boshlang" %}</h1>
+                <p class="lead mb-5">{% trans "Eng yaxshi IT va online kurslar bir platformada. O'zingizga mos kursni toping va o'rganing." %}</p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{% url 'courses:list' %}" class="btn btn-light btn-lg btn-custom">{% trans "Kurslarni ko'rish" %}</a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-light btn-lg btn-custom">{% trans "Ro'yxatdan o'tish" %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-6 col-md-3">
+                <div class="stats-card">
+                    <div class="display-6 fw-bold text-primary">10,000+</div>
+                    <div class="text-muted">{% trans "O'quvchilar" %}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stats-card">
+                    <div class="display-6 fw-bold text-primary">100+</div>
+                    <div class="text-muted">{% trans "Kurslar" %}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stats-card">
+                    <div class="display-6 fw-bold text-primary">50+</div>
+                    <div class="text-muted">{% trans "Mentorlar" %}</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stats-card">
+                    <div class="display-6 fw-bold text-primary">98%</div>
+                    <div class="text-muted">{% trans "Qoniqish" %}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Courses -->
+<section class="section-padding bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3">{% trans "Tanlangan Kurslar" %}</h2>
+            <p class="text-muted">{% trans "Eng mashhur va sifatli kurslarimiz" %}</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for course in featured_courses %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-custom h-100">
+                    <div class="position-relative">
+                        {% if course.thumbnail %}
+                        <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="card-img-top course-card-img">
+                        {% else %}
+                        <div class="card-img-top course-card-img bg-primary d-flex align-items-center justify-content-center">
+                            <i class="fas fa-graduation-cap text-white fs-1"></i>
+                        </div>
+                        {% endif %}
+                        {% if course.is_featured %}
+                        <span class="position-absolute top-0 start-0 m-3 badge bg-warning text-dark">{% trans "Tanlangan" %}</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <span class="badge bg-primary me-1">{{ course.category.name }}</span>
+                            <span class="badge bg-success">{{ course.get_level_display }}</span>
+                        </div>
+                        <h5 class="card-title fw-bold mb-2">{{ course.title }}</h5>
+                        <p class="card-text text-muted small mb-3">{{ course.short_description|truncatewords:15 }}</p>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="rating-stars">
+                                {% for i in ''|center:5 %}
+                                <i class="fas fa-star{% if forloop.counter > course.rating %}-o text-muted{% endif %}"></i>
+                                {% endfor %}
+                                <span class="ms-1 small text-muted">({{ course.rating }})</span>
+                            </div>
+                            <span class="small text-muted"><i class="fas fa-users me-1"></i>{{ course.students_count }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                {% if course.discount_price %}
+                                <span class="fw-bold text-primary fs-5">{{ course.discount_price|floatformat:0 }} so'm</span>
+                                <span class="text-decoration-line-through text-muted ms-2 small">{{ course.price|floatformat:0 }} so'm</span>
+                                {% else %}
+                                <span class="fw-bold text-primary fs-5">{{ course.price|floatformat:0 }} so'm</span>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'courses:detail' course.slug %}" class="btn btn-primary btn-sm">{% trans "Batafsil" %}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">{% trans "Hozircha tanlangan kurslar yo'q." %}</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'courses:list' %}" class="btn btn-primary btn-custom">{% trans "Barcha kurslarni ko'rish" %}</a>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section id="categories" class="section-padding bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3">{% trans "Kategoriyalar" %}</h2>
+            <p class="text-muted">{% trans "Qiziqishingizga mos kategoriyani tanlang" %}</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{% url 'courses:category' category.slug %}" class="text-decoration-none">
+                    <div class="card card-custom text-center h-100">
+                        <div class="card-body">
+                            <div class="feature-icon bg-primary bg-opacity-10 text-primary mx-auto mb-3">
+                                <i class="fas {{ category.icon|default:'fa-book' }}"></i>
+                            </div>
+                            <h6 class="fw-bold text-dark">{{ category.name }}</h6>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">{% trans "Kategoriyalar hozircha yo'q." %}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Latest Courses -->
+<section class="section-padding bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3">{% trans "So'nggi Kurslar" %}</h2>
+            <p class="text-muted">{% trans "Yangi qo'shilgan kurslar" %}</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for course in latest_courses %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-custom h-100">
+                    <div class="position-relative">
+                        {% if course.thumbnail %}
+                        <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="card-img-top course-card-img">
+                        {% else %}
+                        <div class="card-img-top course-card-img bg-info d-flex align-items-center justify-content-center">
+                            <i class="fas fa-graduation-cap text-white fs-1"></i>
+                        </div>
+                        {% endif %}
+                        <span class="position-absolute top-0 end-0 m-3 badge bg-success">{% trans "Yangi" %}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <span class="badge bg-primary">{{ course.category.name }}</span>
+                        </div>
+                        <h5 class="card-title fw-bold mb-2">{{ course.title }}</h5>
+                        <p class="card-text text-muted small mb-3">{{ course.short_description|truncatewords:15 }}</p>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="rating-stars">
+                                {% for i in ''|center:5 %}
+                                <i class="fas fa-star{% if forloop.counter > course.rating %}-o text-muted{% endif %}"></i>
+                                {% endfor %}
+                                <span class="ms-1 small text-muted">({{ course.rating }})</span>
+                            </div>
+                            <span class="small text-muted">{{ course.duration }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                {% if course.discount_price %}
+                                <span class="fw-bold text-primary fs-5">{{ course.discount_price|floatformat:0 }} so'm</span>
+                                <span class="text-decoration-line-through text-muted ms-2 small">{{ course.price|floatformat:0 }} so'm</span>
+                                {% else %}
+                                <span class="fw-bold text-primary fs-5">{{ course.price|floatformat:0 }} so'm</span>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'courses:detail' course.slug %}" class="btn btn-primary btn-sm">{% trans "Batafsil" %}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">{% trans "Hozircha kurslar yo'q." %}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Installment Section -->
+<section class="section-padding bg-white">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3">{% trans "Hozir o'rganing, keyin to'lang" %}</h2>
+            <p class="text-muted">{% trans "Qulay muddatli to'lov tizimi" %}</p>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-3 col-6">
+                <div class="card card-custom text-center">
+                    <div class="card-body">
+                        <div class="display-6 fw-bold text-primary mb-2">3</div>
+                        <h5 class="fw-bold">{% trans "oy" %}</h5>
+                        <p class="text-muted small">{% trans "Kamida 500,000 so'm/oy" %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card card-custom text-center">
+                    <div class="card-body">
+                        <div class="display-6 fw-bold text-primary mb-2">6</div>
+                        <h5 class="fw-bold">{% trans "oy" %}</h5>
+                        <p class="text-muted small">{% trans "Kamida 300,000 so'm/oy" %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card card-custom text-center">
+                    <div class="card-body">
+                        <div class="display-6 fw-bold text-primary mb-2">12</div>
+                        <h5 class="fw-bold">{% trans "oy" %}</h5>
+                        <p class="text-muted small">{% trans "Kamida 200,000 so'm/oy" %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card card-custom text-center">
+                    <div class="card-body">
+                        <div class="display-6 fw-bold text-primary mb-2">18</div>
+                        <h5 class="fw-bold">{% trans "oy" %}</h5>
+                        <p class="text-muted small">{% trans "Kamida 150,000 so'm/oy" %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="section-padding bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3">{% trans "Nima uchun BILOL?" %}</h2>
+            <p class="text-muted">{% trans "Bizning afzalliklarimiz" %}</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-custom text-center h-100">
+                    <div class="card-body">
+                        <div class="feature-icon bg-primary bg-opacity-10 text-primary mx-auto mb-3">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">{% trans "Sertifikat" %}</h5>
+                        <p class="text-muted small">{% trans "Kurs tugagandan so'ng rasmiy sertifikat oling" %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-custom text-center h-100">
+                    <div class="card-body">
+                        <div class="feature-icon bg-success bg-opacity-10 text-success mx-auto mb-3">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">{% trans "Mentor yordami" %}</h5>
+                        <p class="text-muted small">{% trans "Tajribali mentorlardan yordam oling" %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-custom text-center h-100">
+                    <div class="card-body">
+                        <div class="feature-icon bg-info bg-opacity-10 text-info mx-auto mb-3">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">{% trans "Real loyihalar" %}</h5>
+                        <p class="text-muted small">{% trans "Amaliy loyihalar bilan o'rganing" %}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-custom text-center h-100">
+                    <div class="card-body">
+                        <div class="feature-icon bg-warning bg-opacity-10 text-warning mx-auto mb-3">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">{% trans "Muddatli to'lov" %}</h5>
+                        <p class="text-muted small">{% trans "Qulay to'lov tizimi" %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <h2 class="fw-bold mb-4">{% trans "O'qishni boshlashga tayyormisiz?" %}</h2>
+                <p class="lead mb-4">{% trans "Bugun ro'yxatdan o'ting va o'rganishni boshlang!" %}</p>
+                <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg btn-custom">{% trans "Bepul ro'yxatdan o'tish" %}</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="section-padding bg-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2 class="fw-bold mb-4">{% trans "Biz haqimizda" %}</h2>
+                <p class="text-muted mb-4">{% trans "BILOL - O'zbekistondagi eng yaxshi online kurslar platformasi. Biz yoshlar uchun sifatli ta'lim imkoniyatlarini yaratamiz." %}</p>
+                <p class="text-muted mb-4">{% trans "Bizning maqsadimiz - har bir yosh o'z kelajagini o'zi qurishi uchun zarur bo'lgan bilimlarga ega bo'lishiga yordam berish." %}</p>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <div class="feature-icon bg-primary bg-opacity-10 text-primary me-2" style="width: 40px; height: 40px; font-size: 1rem;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="fw-medium">{% trans "Sifatli kontent" %}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <div class="feature-icon bg-primary bg-opacity-10 text-primary me-2" style="width: 40px; height: 40px; font-size: 1rem;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="fw-medium">{% trans "Tajribali mentorlar" %}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <div class="feature-icon bg-primary bg-opacity-10 text-primary me-2" style="width: 40px; height: 40px; font-size: 1rem;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="fw-medium">{% trans "Muddatli to'lov" %}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <div class="feature-icon bg-primary bg-opacity-10 text-primary me-2" style="width: 40px; height: 40px; font-size: 1rem;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <span class="fw-medium">{% trans "Sertifikat" %}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card card-custom bg-primary text-white">
+                    <div class="card-body p-4">
+                        <h3 class="fw-bold mb-4">{% trans "Nima uchun BILOL?" %}</h3>
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-3 d-flex">
+                                <i class="fas fa-star text-warning me-3 mt-1"></i>
+                                <span>{% trans "100+ sifatli kurslar" %}</span>
+                            </li>
+                            <li class="mb-3 d-flex">
+                                <i class="fas fa-star text-warning me-3 mt-1"></i>
+                                <span>{% trans "50+ tajribali mentorlar" %}</span>
+                            </li>
+                            <li class="mb-3 d-flex">
+                                <i class="fas fa-star text-warning me-3 mt-1"></i>
+                                <span>{% trans "Muddatli to'lov imkoniyati" %}</span>
+                            </li>
+                            <li class="mb-3 d-flex">
+                                <i class="fas fa-star text-warning me-3 mt-1"></i>
+                                <span>{% trans "Kurs tugagandan so'ng sertifikat" %}</span>
+                            </li>
+                            <li class="d-flex">
+                                <i class="fas fa-star text-warning me-3 mt-1"></i>
+                                <span>{% trans "24/7 yordam" %}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

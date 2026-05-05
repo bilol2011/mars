@@ -1,0 +1,82 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+
+{% block title %}Foydalanuvchilar - BILOL Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0">Foydalanuvchilar</h3>
+</div>
+
+<div class="card card-custom mb-4">
+    <div class="card-body">
+        <form method="get" class="d-flex gap-2 mb-0">
+            <input type="text" name="search" class="form-control" placeholder="Email, ism, familiya yoki username orqali qidirish..." value="{{ search_query }}">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+            {% if search_query %}
+            <a href="{% url 'dashboard:admin_users' %}" class="btn btn-outline-secondary">Tozalash</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="card card-custom">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-custom table-hover">
+                <thead>
+                    <tr>
+                        <th>Foydalanuvchi</th>
+                        <th>Email</th>
+                        <th>Telefon</th>
+                        <th>Holati</th>
+                        <th>Qo'shilgan sana</th>
+                        <th class="text-end">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-weight: bold;">
+                                    {{ u.first_name|first|default:u.username|first|upper }}
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold">{{ u.get_full_name|default:u.username }}</h6>
+                                    <small class="text-muted">@{{ u.username }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.phone_number|default:"Kiritilmagan" }}</td>
+                        <td>
+                            {% if u.is_active %}
+                                <span class="badge badge-soft-success rounded-pill px-3 py-2">Faol</span>
+                            {% else %}
+                                <span class="badge badge-soft-danger rounded-pill px-3 py-2">Bloklangan</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ u.created_at|date:"d.m.Y H:i" }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'dashboard:admin_user_detail' u.id %}" class="btn btn-sm btn-outline-primary" title="Ko'rish">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'dashboard:admin_block_user' u.id %}" class="btn btn-sm btn-outline-warning" title="{% if u.is_active %}Bloklash{% else %}Blokdan chiqarish{% endif %}" onclick="return confirm('Haqiqatan ham bu amalni bajarasizmi?');">
+                                <i class="fas {% if u.is_active %}fa-ban{% else %}fa-check-circle{% endif %}"></i>
+                            </a>
+                            <a href="{% url 'dashboard:admin_delete_user' u.id %}" class="btn btn-sm btn-outline-danger" title="O'chirish" onclick="return confirm('Haqiqatan ham o\'chirasizmi?');">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">Foydalanuvchilar topilmadi</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

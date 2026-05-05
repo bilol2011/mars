@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Kurslar - BILOL" %}{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h1 class="fw-bold mb-2">{% trans "Barcha Kurslar" %}</h1>
+            <p class="text-muted">{% trans "O'zingizga mos kursni toping va o'rganing" %}</p>
+        </div>
+        
+        <!-- Search and Filters -->
+        <div class="card card-custom mb-4">
+            <div class="card-body p-4">
+                <form method="get">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <input type="text" name="q" value="{{ query }}" placeholder="{% trans "Kurs qidirish..." %}" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <select name="category" class="form-select">
+                                <option value="">{% trans "Barcha kategoriyalar" %}</option>
+                                {% for category in categories %}
+                                <option value="{{ category.slug }}" {% if selected_category == category.slug %}selected{% endif %}>{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="level" class="form-select">
+                                <option value="">{% trans "Barcha darajalar" %}</option>
+                                <option value="beginner" {% if selected_level == 'beginner' %}selected{% endif %}>{% trans "Boshlang'ich" %}</option>
+                                <option value="intermediate" {% if selected_level == 'intermediate' %}selected{% endif %}>{% trans "O'rtacha" %}</option>
+                                <option value="advanced" {% if selected_level == 'advanced' %}selected{% endif %}>{% trans "Yuqori" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="sort" class="form-select">
+                                <option value="latest" {% if sort_by == 'latest' %}selected{% endif %}>{% trans "So'nggi" %}</option>
+                                <option value="popular" {% if sort_by == 'popular' %}selected{% endif %}>{% trans "Mashhur" %}</option>
+                                <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>{% trans "Reyting" %}</option>
+                                <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>{% trans "Narx (arzon)" %}</option>
+                                <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>{% trans "Narx (qimmat)" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-3 text-end">
+                        <button type="submit" class="btn btn-primary btn-custom">{% trans "Qidirish" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Results Count -->
+        <div class="mb-4">
+            <p class="text-muted">{{ courses.count }} {% trans "ta kurs topildi" %}</p>
+        </div>
+        
+        <!-- Courses Grid -->
+        <div class="row g-4">
+            {% for course in courses %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-custom h-100">
+                    <div class="position-relative">
+                        {% if course.thumbnail %}
+                        <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="card-img-top course-card-img">
+                        {% else %}
+                        <div class="card-img-top course-card-img bg-primary d-flex align-items-center justify-content-center">
+                            <i class="fas fa-graduation-cap text-white fs-1"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <span class="badge bg-primary me-1">{{ course.category.name }}</span>
+                            <span class="badge bg-success">{{ course.get_level_display }}</span>
+                        </div>
+                        <h5 class="fw-bold mb-2">{{ course.title }}</h5>
+                        <p class="text-muted small mb-3">{{ course.short_description|truncatewords:15 }}</p>
+                        <div class="d-flex gap-3 mb-3 text-muted small">
+                            <span><i class="fas fa-user me-1"></i>{{ course.mentor.get_full_name }}</span>
+                            <span><i class="fas fa-clock me-1"></i>{{ course.duration }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="rating-stars">
+                                {% for i in ''|center:5 %}
+                                <i class="fas fa-star{% if forloop.counter > course.rating %}-o text-muted{% endif %}"></i>
+                                {% endfor %}
+                                <span class="ms-1 small text-muted">({{ course.rating }})</span>
+                            </div>
+                            <span class="small text-muted"><i class="fas fa-users me-1"></i>{{ course.students_count }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                {% if course.discount_price %}
+                                <span class="fw-bold text-primary fs-5">{{ course.discount_price|floatformat:0 }} so'm</span>
+                                <span class="text-decoration-line-through text-muted ms-2 small">{{ course.price|floatformat:0 }} so'm</span>
+                                {% else %}
+                                <span class="fw-bold text-primary fs-5">{{ course.price|floatformat:0 }} so'm</span>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'courses:detail' course.slug %}" class="btn btn-primary btn-sm">{% trans "Batafsil" %}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-search text-muted fs-1 mb-3"></i>
+                <p class="text-muted">{% trans "Kurslar topilmadi." %}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

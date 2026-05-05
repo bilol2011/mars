@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}To'lov tarixi - BILOL{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="mb-4">
+            <h1 class="fw-bold mb-2">To'lov tarixi</h1>
+            <p class="text-muted">Barcha to'lovlaringizni ko'ring</p>
+        </div>
+        
+        <div class="card card-custom">
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-custom table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Kurs</th>
+                                <th>Summa</th>
+                                <th>Usul</th>
+                                <th>Holat</th>
+                                <th>Sana</th>
+                                <th>Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in payments %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if payment.course.thumbnail %}
+                                        <img src="{{ payment.course.thumbnail.url }}" alt="{{ payment.course.title }}" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                        {% else %}
+                                        <div class="bg-primary rounded d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-graduation-cap text-white small"></i>
+                                        </div>
+                                        {% endif %}
+                                        <div>
+                                            <div class="fw-bold small">{{ payment.course.title }}</div>
+                                            <div class="small text-muted">{{ payment.transaction_id|default:"" }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ payment.amount|floatformat:0 }} so'm</td>
+                                <td>
+                                    <span class="badge {% if payment.payment_method == 'click' %}bg-warning{% elif payment.payment_method == 'payme' %}bg-info{% else %}bg-secondary{% endif %}">
+                                        {{ payment.get_payment_method_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge {% if payment.status == 'paid' %}bg-success{% elif payment.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                        {{ payment.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>{{ payment.created_at|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    {% if payment.payment_plan %}
+                                    <a href="{% url 'payments:installment_detail' payment.id %}" class="text-primary text-decoration-none">
+                                        Muddatli to'lov
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    To'lovlar yo'q.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

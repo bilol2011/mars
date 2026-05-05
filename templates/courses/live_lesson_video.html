@@ -1,0 +1,349 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ live_lesson.title }} - Video Chat{% endblock %}
+
+{% block extra_css %}
+<style>
+    .video-container {
+        position: relative;
+        width: 100%;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        background: #000;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .video-container video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .local-video {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 200px;
+        height: 150px;
+        background: #333;
+        border-radius: 8px;
+        z-index: 10;
+        border: 2px solid white;
+    }
+    
+    .remote-video {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .controls {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 10px;
+        z-index: 10;
+    }
+    
+    .control-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(255, 255, 255, 0.9);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content-center;
+        font-size: 20px;
+        transition: all 0.3s;
+    }
+    
+    .control-btn:hover {
+        background: white;
+        transform: scale(1.1);
+    }
+    
+    .control-btn.danger {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .control-btn.danger:hover {
+        background: #c82333;
+    }
+    
+    .participant-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 15px;
+    }
+    
+    .participant-video {
+        position: relative;
+        padding-bottom: 56.25%;
+        background: #333;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .participant-video video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .participant-name {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-0">{{ live_lesson.title }}</h2>
+                    <p class="text-muted mb-0">{{ live_lesson.course.title }}</p>
+                </div>
+                <a href="{% url 'courses:live_lesson_detail' live_lesson.id %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Orqaga
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="card card-custom mb-4">
+                <div class="card-body p-0">
+                    <div class="video-container">
+                        <video id="remoteVideo" class="remote-video" autoplay playsinline></video>
+                        <video id="localVideo" class="local-video" autoplay playsinline muted></video>
+                        
+                        <div class="controls">
+                            <button id="toggleAudio" class="control-btn" title="Ovoz">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <button id="toggleVideo" class="control-btn" title="Kamera">
+                                <i class="fas fa-video"></i>
+                            </button>
+                            <button id="toggleScreen" class="control-btn" title="Ekran ulash">
+                                <i class="fas fa-desktop"></i>
+                            </button>
+                            <button id="endCall" class="control-btn danger" title="Chiqish">
+                                <i class="fas fa-phone-slash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card card-custom">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Chat</h5>
+                    <div id="chatMessages" class="mb-3" style="height: 200px; overflow-y: auto;">
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Chat xabarlari shu yerda ko'rinadi
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="chatInput" class="form-control" placeholder="Xabar yozing...">
+                        <button id="sendChat" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-3">
+            <div class="card card-custom">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Qatnashchilar</h5>
+                    <div id="participantsList" class="list-group list-group-flush">
+                        <div class="list-group-item d-flex align-items-center">
+                            <div class="flex-shrink-0">
+                                <div class="rounded-circle bg-success d-flex align-items-center justify-content-center text-white" width="40" height="40">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0">{{ request.user.get_full_name }}</h6>
+                                <small class="text-success">Online</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card card-custom mt-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Ma'lumot</h5>
+                    <div class="mb-3">
+                        <p class="text-muted small mb-1">Dars</p>
+                        <p class="fw-bold mb-0">{{ live_lesson.title }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="text-muted small mb-1">Ustoz</p>
+                        <p class="fw-bold mb-0">{{ live_lesson.mentor.get_full_name }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="text-muted small mb-1">Davomiyligi</p>
+                        <p class="fw-bold mb-0">{{ live_lesson.duration }} daqiqa</p>
+                    </div>
+                    <div class="alert alert-warning small">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Bu demo versiya. Haqiqiy video chat uchun WebSocket server kerak.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Video elements
+    const localVideo = document.getElementById('localVideo');
+    const remoteVideo = document.getElementById('remoteVideo');
+    
+    // Control buttons
+    const toggleAudio = document.getElementById('toggleAudio');
+    const toggleVideo = document.getElementById('toggleVideo');
+    const toggleScreen = document.getElementById('toggleScreen');
+    const endCall = document.getElementById('endCall');
+    
+    // Chat elements
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendChat = document.getElementById('sendChat');
+    
+    let localStream = null;
+    let isAudioEnabled = true;
+    let isVideoEnabled = true;
+    
+    // Initialize local video
+    async function initLocalVideo() {
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true
+            });
+            localVideo.srcObject = localStream;
+        } catch (error) {
+            console.error('Error accessing media devices:', error);
+            alert('Kamera yoki mikrofonni olishda xatolik yuz berdi.');
+        }
+    }
+    
+    // Toggle audio
+    toggleAudio.addEventListener('click', () => {
+        if (localStream) {
+            isAudioEnabled = !isAudioEnabled;
+            localStream.getAudioTracks().forEach(track => {
+                track.enabled = isAudioEnabled;
+            });
+            toggleAudio.innerHTML = isAudioEnabled ? '<i class="fas fa-microphone"></i>' : '<i class="fas fa-microphone-slash"></i>';
+            toggleAudio.classList.toggle('danger', !isAudioEnabled);
+        }
+    });
+    
+    // Toggle video
+    toggleVideo.addEventListener('click', () => {
+        if (localStream) {
+            isVideoEnabled = !isVideoEnabled;
+            localStream.getVideoTracks().forEach(track => {
+                track.enabled = isVideoEnabled;
+            });
+            toggleVideo.innerHTML = isVideoEnabled ? '<i class="fas fa-video"></i>' : '<i class="fas fa-video-slash"></i>';
+            toggleVideo.classList.toggle('danger', !isVideoEnabled);
+        }
+    });
+    
+    // Toggle screen share
+    toggleScreen.addEventListener('click', async () => {
+        try {
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true
+            });
+            const videoTrack = screenStream.getVideoTracks()[0];
+            
+            if (localStream) {
+                localStream.getVideoTracks().forEach(track => {
+                    localStream.removeTrack(track);
+                });
+                localStream.addTrack(videoTrack);
+                localVideo.srcObject = localStream;
+            }
+            
+            videoTrack.onended = () => {
+                // Revert to camera
+                initLocalVideo();
+            };
+        } catch (error) {
+            console.error('Error sharing screen:', error);
+        }
+    });
+    
+    // End call
+    endCall.addEventListener('click', () => {
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+        }
+        window.location.href = "{% url 'courses:live_lesson_detail' live_lesson.id %}";
+    });
+    
+    // Send chat message
+    sendChat.addEventListener('click', sendChatMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendChatMessage();
+        }
+    });
+    
+    function sendChatMessage() {
+        const message = chatInput.value.trim();
+        if (message) {
+            addChatMessage('{{ request.user.get_full_name }}', message, true);
+            chatInput.value = '';
+            
+            // In production, send to WebSocket server
+            console.log('Sending message:', message);
+        }
+    }
+    
+    function addChatMessage(sender, message, isOwn = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `alert ${isOwn ? 'alert-primary' : 'alert-secondary'} mb-2`;
+        messageDiv.innerHTML = `
+            <strong>${sender}:</strong> ${message}
+        `;
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+        initLocalVideo();
+    });
+</script>
+{% endblock %}

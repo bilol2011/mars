@@ -1,0 +1,360 @@
+# Russian translations for BILOL project.
+# Copyright (C) 2024 BILOL
+# This file is distributed under the same license as the BILOL project.
+msgid ""
+msgstr ""
+"Project-Id-Version: BILOL\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-04-30 15:22+0500\n"
+"PO-Revision-Date: 2024-04-30 15:22+0500\n"
+"Last-Translator: \n"
+"Language-Team: Russian\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "BILOL - Online Kurslar Platformasi"
+msgstr "BILOL - Платформа онлайн курсов"
+
+msgid "BILOL - Eng yaxshi online kurslar platformasi. Kelajagingizni biz bilan boshlang."
+msgstr "BILOL - Лучшая платформа онлайн курсов. Начните свое будущее с нами."
+
+msgid "Bosh sahifa"
+msgstr "Главная"
+
+msgid "Kurslar"
+msgstr "Курсы"
+
+msgid "Kategoriyalar"
+msgstr "Категории"
+
+msgid "Biz haqimizda"
+msgstr "О нас"
+
+msgid "Kurslarni qidirish..."
+msgstr "Поиск курсов..."
+
+msgid "Jonli darslar"
+msgstr "Живые уроки"
+
+msgid "Hisob"
+msgstr "Счет"
+
+msgid "Chiqish"
+msgstr "Выход"
+
+msgid "Kirish"
+msgstr "Войти"
+
+msgid "Ro'yxatdan o'tish"
+msgstr "Регистрация"
+
+msgid "Tezkor havolalar"
+msgstr "Быстрые ссылки"
+
+msgid "Dasturlash"
+msgstr "Программирование"
+
+msgid "Dizayn"
+msgstr "Дизайн"
+
+msgid "Marketing"
+msgstr "Маркетинг"
+
+msgid "Biznes"
+msgstr "Бизнес"
+
+msgid "Aloqa"
+msgstr "Контакты"
+
+msgid "Barcha huquqlar himoyalangan."
+msgstr "Все права защищены."
+
+msgid "Kelajagingizni Bilol bilan boshlang"
+msgstr "Начните свое будущее с Bilol"
+
+msgid "Eng yaxshi IT va online kurslar bir platformada. O'zingizga mos kursni toping va o'rganing."
+msgstr "Лучшие IT и онлайн курсы на одной платформе. Найдите подходящий курс и учитесь."
+
+msgid "Kurslarni ko'rish"
+msgstr "Смотреть курсы"
+
+msgid "O'quvchilar"
+msgstr "Студенты"
+
+msgid "Mentorlar"
+msgstr "Менторы"
+
+msgid "Qoniqish"
+msgstr "Удовлетворенность"
+
+msgid "Tanlangan Kurslar"
+msgstr "Рекомендуемые курсы"
+
+msgid "Eng mashhur va sifatli kurslarimiz"
+msgstr "Наши самые популярные и качественные курсы"
+
+msgid "Tanlangan"
+msgstr "Рекомендуемый"
+
+msgid "Batafsil"
+msgstr "Подробнее"
+
+msgid "Hozircha tanlangan kurslar yo'q."
+msgstr "Рекомендуемых курсов пока нет."
+
+msgid "Barcha kurslarni ko'rish"
+msgstr "Смотреть все курсы"
+
+msgid "Qiziqishingizga mos kategoriyani tanlang"
+msgstr "Выберите категорию по интересам"
+
+msgid "Kategoriyalar hozircha yo'q."
+msgstr "Категорий пока нет."
+
+msgid "So'nggi Kurslar"
+msgstr "Последние курсы"
+
+msgid "Yangi qo'shilgan kurslar"
+msgstr "Новые курсы"
+
+msgid "Yangi"
+msgstr "Новый"
+
+msgid "Hozircha kurslar yo'q."
+msgstr "Курсов пока нет."
+
+msgid "Hozir o'rganing, keyin to'lang"
+msgstr "Учитесь сейчас, платите потом"
+
+msgid "Qulay muddatli to'lov tizimi"
+msgstr "Удобная система рассрочки"
+
+msgid "oy"
+msgstr "месяц"
+
+msgid "Kamida 500,000 so'm/oy"
+msgstr "Минимум 500,000 сум/месяц"
+
+msgid "Kamida 300,000 so'm/oy"
+msgstr "Минимум 300,000 сум/месяц"
+
+msgid "Kamida 200,000 so'm/oy"
+msgstr "Минимум 200,000 сум/месяц"
+
+msgid "Kamida 150,000 so'm/oy"
+msgstr "Минимум 150,000 сум/месяц"
+
+msgid "Nima uchun BILOL?"
+msgstr "Почему BILOL?"
+
+msgid "Bizning afzalliklarimiz"
+msgstr "Наши преимущества"
+
+msgid "Sertifikat"
+msgstr "Сертификат"
+
+msgid "Kurs tugagandan so'ng rasmiy sertifikat oling"
+msgstr "Получите официальный сертификат после завершения курса"
+
+msgid "Mentor yordami"
+msgstr "Помощь ментора"
+
+msgid "Tajribali mentorlardan yordam oling"
+msgstr "Получите помощь от опытных менторов"
+
+msgid "Real loyihalar"
+msgstr "Реальные проекты"
+
+msgid "Amaliy loyihalar bilan o'rganing"
+msgstr "Учитесь на практических проектах"
+
+msgid "Muddatli to'lov"
+msgstr "Рассрочка"
+
+msgid "Qulay to'lov tizimi"
+msgstr "Удобная система оплаты"
+
+msgid "O'qishni boshlashga tayyormisiz?"
+msgstr "Готовы начать обучение?"
+
+msgid "Bugun ro'yxatdan o'ting va o'rganishni boshlang!"
+msgstr "Зарегистрируйтесь сегодня и начните обучение!"
+
+msgid "Bepul ro'yxatdan o'tish"
+msgstr "Бесплатная регистрация"
+
+msgid "BILOL - O'zbekistondagi eng yaxshi online kurslar platformasi. Biz yoshlar uchun sifatli ta'lim imkoniyatlarini yaratamiz."
+msgstr "BILOL - лучшая платформа онлайн курсов в Узбекистане. Мы создаем качественные образовательные возможности для молодежи."
+
+msgid "Bizning maqsadimiz - har bir yosh o'z kelajagini o'zi qurishi uchun zarur bo'lgan bilimlarga ega bo'lishiga yordam berish."
+msgstr "Наша цель - помочь каждому молодому человеку получить необходимые знания для построения своего будущего."
+
+msgid "Sifatli kontent"
+msgstr "Качественный контент"
+
+msgid "Tajribali mentorlar"
+msgstr "Опытные менторы"
+
+msgid "100+ sifatli kurslar"
+msgstr "100+ качественных курсов"
+
+msgid "50+ tajribali mentorlar"
+msgstr "50+ опытных менторов"
+
+msgid "Muddatli to'lov imkoniyati"
+msgstr "Возможность рассрочки"
+
+msgid "Kurs tugagandan so'ng sertifikat"
+msgstr "Сертификат после завершения курса"
+
+msgid "24/7 yordam"
+msgstr "Поддержка 24/7"
+
+msgid "Kurslar - BILOL"
+msgstr "Курсы - BILOL"
+
+msgid "Barcha Kurslar"
+msgstr "Все курсы"
+
+msgid "O'zingizga mos kursni toping va o'rganing"
+msgstr "Найдите подходящий курс и учитесь"
+
+msgid "Kurs qidirish..."
+msgstr "Поиск курсов..."
+
+msgid "Barcha kategoriyalar"
+msgstr "Все категории"
+
+msgid "Barcha darajalar"
+msgstr "Все уровни"
+
+msgid "Boshlang'ich"
+msgstr "Начальный"
+
+msgid "O'rtacha"
+msgstr "Средний"
+
+msgid "Yuqori"
+msgstr "Продвинутый"
+
+msgid "So'nggi"
+msgstr "Последние"
+
+msgid "Mashhur"
+msgstr "Популярные"
+
+msgid "Reyting"
+msgstr "Рейтинг"
+
+msgid "Narx (arzon)"
+msgstr "Цена (дешевые)"
+
+msgid "Narx (qimmat)"
+msgstr "Цена (дорогие)"
+
+msgid "Qidirish"
+msgstr "Поиск"
+
+msgid "ta kurs topildi"
+msgstr "курсов найдено"
+
+msgid "Kurslar topilmadi."
+msgstr "Курсы не найдены."
+
+msgid "Kirish - BILOL"
+msgstr "Вход - BILOL"
+
+msgid "Tizimga kirish"
+msgstr "Войти в систему"
+
+msgid "BILOL platformasiga kirish uchun tizimga kiring"
+msgstr "Войдите в систему для доступа к платформе BILOL"
+
+msgid "Parol"
+msgstr "Пароль"
+
+msgid "Eslab qolish"
+msgstr "Запомнить меня"
+
+msgid "Parolni unutdingizmi?"
+msgstr "Забыли пароль?"
+
+msgid "Hisobingiz yo'qmi?"
+msgstr "Нет аккаунта?"
+
+msgid "Ro'yxatdan o'tish - BILOL"
+msgstr "Регистрация - BILOL"
+
+msgid "BILOL platformasiga ro'yxatdan o'ting"
+msgstr "Зарегистрируйтесь на платформе BILOL"
+
+msgid "Foydalanuvchi nomi"
+msgstr "Имя пользователя"
+
+msgid "Ism"
+msgstr "Имя"
+
+msgid "Familya"
+msgstr "Фамилия"
+
+msgid "Telefon"
+msgstr "Телефон"
+
+msgid "Parolni tasdiqlang"
+msgstr "Подтвердите пароль"
+
+msgid "Allaqachon ro'yxatdan o'tganmisiz?"
+msgstr "Уже зарегистрированы?"
+
+msgid "Tizimga kiring"
+msgstr "Войдите в систему"
+
+msgid "O'quv Markazlari - BILOL"
+msgstr "Учебные центры - BILOL"
+
+msgid "O'quv Markazlari"
+msgstr "Учебные центры"
+
+msgid "Eng yaxshi o'quv markazlari bilan tanishing"
+msgstr "Познакомьтесь с лучшими учебными центрами"
+
+msgid "O'quv markazlari hozircha yo'q."
+msgstr "Учебные центры пока нет."
+
+msgid "Reyting"
+msgstr "Рейтинг"
+
+msgid "Sharhlar"
+msgstr "Отзывы"
+
+msgid "Haqida"
+msgstr "О нас"
+
+msgid "Aloqa ma'lumotlari"
+msgstr "Контактная информация"
+
+msgid "Telefon"
+msgstr "Телефон"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Manzil"
+msgstr "Адрес"
+
+msgid "Ijtimoiy tarmoqlar"
+msgstr "Социальные сети"
+
+msgid "Website"
+msgstr "Веб-сайт"
+
+msgid "Tezkor aloqa"
+msgstr "Быстрая связь"
+
+msgid "Qo'ng'iroq qilish"
+msgstr "Позвонить"
+
+msgid "Email yuborish"
+msgstr "Отправить email"

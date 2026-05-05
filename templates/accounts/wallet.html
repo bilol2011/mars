@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+
+{% block title %}Hisob to'ldirish - BILOL{% endblock %}
+
+{% block extra_css %}
+<style>
+.payment-sidebar {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.payment-sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.payment-sidebar-link:hover {
+    background: #f8f9fa;
+}
+
+.payment-sidebar-link.active {
+    background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
+    color: white;
+}
+
+.payment-sidebar-link i {
+    width: 24px;
+    margin-right: 12px;
+}
+
+.payment-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+.payment-info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.payment-info-item:last-child {
+    border-bottom: none;
+}
+
+.payment-info-label {
+    color: #666;
+    font-size: 14px;
+}
+
+.payment-info-value {
+    font-weight: 600;
+    color: #333;
+}
+
+.payment-info-value.debt {
+    color: #dc3545;
+}
+
+.amount-btn {
+    padding: 10px 20px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.amount-btn:hover {
+    border-color: #FF6B35;
+    color: #FF6B35;
+}
+
+.amount-btn.active {
+    background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
+    border-color: #FF6B35;
+    color: white;
+}
+
+.pay-button {
+    background: linear-gradient(135deg, #FF6B35 0%, #FF8C42 100%);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.pay-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.card-item {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 20px;
+    color: white;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.card-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.card-item.selected {
+    border: 3px solid #FF6B35;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <div class="payment-sidebar">
+                <a href="{% url 'dashboard:home' %}" class="payment-sidebar-link">
+                    <i class="fas fa-home"></i>
+                    Asosiy
+                </a>
+                <a href="{% url 'dashboard:my_courses' %}" class="payment-sidebar-link">
+                    <i class="fas fa-book"></i>
+                    Kurslarim
+                </a>
+                <a href="#" class="payment-sidebar-link">
+                    <i class="fas fa-graduation-cap"></i>
+                    Eduverse
+                </a>
+                <a href="#" class="payment-sidebar-link">
+                    <i class="fas fa-blog"></i>
+                    Blog
+                </a>
+                <a href="{% url 'accounts:wallet' %}" class="payment-sidebar-link active">
+                    <i class="fas fa-credit-card"></i>
+                    Hisob to'ldirish
+                </a>
+                <a href="{% url 'accounts:shop' %}" class="payment-sidebar-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    Bilol Shop
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <!-- Payment Information -->
+            <div class="payment-card">
+                <h5 class="fw-bold mb-4">To'lov ma'lumotlari</h5>
+                
+                <div class="payment-info-item">
+                    <span class="payment-info-label">O'quvchi</span>
+                    <span class="payment-info-value">{{ user.get_full_name|default:user.username }}</span>
+                </div>
+                <div class="payment-info-item">
+                    <span class="payment-info-label">To'lov uchun</span>
+                    <span class="payment-info-value" id="paymentAmount">580,000 so'm</span>
+                </div>
+            </div>
+
+            <!-- Amount Selection -->
+            <div class="payment-card">
+                <h5 class="fw-bold mb-4">Summani kiriting</h5>
+                
+                <div class="mb-4">
+                    <input type="number" id="amountInput" class="form-control form-control-lg" 
+                           placeholder="Summani kiriting" value="580000" min="1000" step="1000">
+                </div>
+
+                <div class="row g-2 mb-4">
+                    <div class="col-6 col-md-3">
+                        <button type="button" class="amount-btn w-100" onclick="setAmount(600000)">
+                            600,000 so'm
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <button type="button" class="amount-btn w-100" onclick="setAmount(10000)">
+                            10,000 so'm
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <button type="button" class="amount-btn w-100 active" onclick="setAmount(580000)">
+                            580,000 so'm
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <button type="button" class="amount-btn w-100" onclick="setAmount(590000)">
+                            590,000 so'm
+                        </button>
+                    </div>
+                </div>
+
+                <form method="post" action="{% url 'accounts:add_balance' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="custom_amount" id="hiddenAmount" value="580000">
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold mb-3">Kartani tanlang</label>
+                        <div class="row g-3">
+                            {% for card in user.payment_cards.all %}
+                            <div class="col-md-6">
+                                <div class="card-item {% if card.is_default %}selected{% endif %}" onclick="selectCard(this, {{ card.id }})">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold">{{ card.get_card_type_display }}</span>
+                                        {% if card.is_default %}
+                                        <span class="badge bg-light text-dark">Asosiy</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="small">{{ card.get_masked_number }}</div>
+                                    <div class="small mt-1">Balans: {{ card.balance|floatformat:0 }} so'm</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                            <!-- Add Card Button (Always Visible) -->
+                            <div class="col-md-6">
+                                <a href="{% url 'accounts:add_card' %}" class="text-decoration-none h-100 d-block">
+                                    <div class="card-item d-flex align-items-center justify-content-center h-100 border border-2" style="background: transparent; color: #FF6B35; border-color: #FF6B35 !important; border-style: dashed !important; min-height: 104px;">
+                                        <div class="text-center">
+                                            <i class="fas fa-plus-circle fa-2x mb-2"></i>
+                                            <div class="fw-bold">Yangi karta qo'shish</div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <input type="hidden" name="card_id" id="selectedCard" value="">
+                    </div>
+
+                    <button type="submit" class="pay-button" id="payButton">
+                        To'lov qilish <span id="payButtonAmount">580,000</span> so'm
+                    </button>
+                </form>
+
+                <p class="text-center text-muted mt-3 small">
+                    <i class="fas fa-lock me-1"></i>
+                    To'lov xavfsiz kanallar orqali amalga oshiriladi
+                </p>
+            </div>
+
+            <!-- Wallet Balance -->
+            <div class="payment-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold mb-1">Hisob balansi</h5>
+                        <p class="text-muted small mb-0">Mavjud mablag'</p>
+                    </div>
+                    <div class="text-end">
+                        <div class="display-6 fw-bold text-primary">{{ wallet.balance|floatformat:0 }} so'm</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setAmount(amount) {
+    document.getElementById('amountInput').value = amount;
+    document.getElementById('hiddenAmount').value = amount;
+    document.getElementById('paymentAmount').textContent = amount.toLocaleString() + ' so\'m';
+    document.getElementById('payButtonAmount').textContent = amount.toLocaleString();
+    
+    // Update button states
+    document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+function selectCard(element, cardId) {
+    document.querySelectorAll('.card-item').forEach(item => item.classList.remove('selected'));
+    element.classList.add('selected');
+    document.getElementById('selectedCard').value = cardId;
+}
+
+// Update amount display on input change
+document.getElementById('amountInput').addEventListener('input', function() {
+    const amount = parseInt(this.value) || 0;
+    document.getElementById('hiddenAmount').value = amount;
+    document.getElementById('paymentAmount').textContent = amount.toLocaleString() + ' so\'m';
+    document.getElementById('payButtonAmount').textContent = amount.toLocaleString();
+    
+    // Remove active state from buttons
+    document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active'));
+});
+
+// Set default card
+{% for card in user.payment_cards.all %}
+{% if card.is_default %}
+document.getElementById('selectedCard').value = {{ card.id }};
+{% endif %}
+{% endfor %}
+</script>
+{% endblock %}
