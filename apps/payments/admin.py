@@ -20,6 +20,7 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = ('user', 'course', 'amount', 'status', 'payment_method', 'payment_date', 'due_date')
     list_filter = ('status', 'payment_method', 'created_at')
     search_fields = ('user__email', 'course__title', 'transaction_id')
+    ordering = ('-created_at',)
     readonly_fields = ('transaction_id', 'created_at', 'updated_at')
     inlines = [InstallmentPaymentInline]
 

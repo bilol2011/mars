@@ -2,11 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Count, Avg
-from django.db import transaction
 from django.http import JsonResponse
 from django.utils import timezone
 from .models import Course, Category, Lesson, Enrollment, LessonProgress, LiveLesson, LiveLessonParticipant, EducationalCenter
-from apps.accounts.models import Wallet, Transaction, User
+from apps.accounts.models import User
 
 
 def home_view(request):
@@ -163,52 +162,7 @@ def purchase_course(request, slug):
     """
     Purchase course using wallet balance
     """
-    if not request.user.is_authenticated:
-        return redirect('accounts:login')
-    
-    course = get_object_or_404(Course, slug=slug, is_published=True)
-    
-    # Check if already enrolled
-    if Enrollment.objects.filter(user=request.user, course=course).exists():
-        messages.warning(request, 'Siz allaqachon bu kursga yozilgansiz.')
-        return redirect('courses:detail', slug=course.slug)
-    
-    # Get or create wallet
-    wallet, created = Wallet.objects.get_or_create(user=request.user)
-    
-    # Check balance
-    course_price = course.get_discounted_price()
-    if wallet.balance < course_price:
-        messages.error(request, f"Hisobingizda yetarli mablag' yo'q. Kerak: {course_price} so'm, Sizda: {wallet.balance} so'm")
-        return redirect('accounts:wallet')
-    
-    # Process purchase
-    with transaction.atomic():
-        # Deduct from wallet
-        wallet.deduct_balance(course_price)
-        
-        # Create enrollment
-        Enrollment.objects.create(
-            user=request.user,
-            course=course,
-            progress=0
-        )
-        
-        # Create transaction record
-        Transaction.objects.create(
-            user=request.user,
-            transaction_type='purchase',
-            amount=course_price,
-            status='success',
-            description=f'Kurs sotib olish: {course.title}'
-        )
-        
-        # Update course students count
-        course.students_count += 1
-        course.save()
-    
-    messages.success(request, 'Kurs muvaffaqiyatli sotib olindi!')
-    return redirect('dashboard:my_courses')
+    return redirect('wallet:purchase_course', slug=slug)
 
 
 def search_courses(request):

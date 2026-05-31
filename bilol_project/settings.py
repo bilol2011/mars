@@ -4,28 +4,37 @@ Django settings for bilol_project project.
 
 import os
 from pathlib import Path
+from decouple import Csv, config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def config_bool(name, default=False):
+    value = config(name, default=default)
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in {'1', 'true', 'yes', 'on', 'debug', 'development'}
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-your-secret-key-here-change-in-production'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-only-change-me')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config_bool('DEBUG', default=True)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
 
 # CSRF trusted origins for browser preview
 CSRF_TRUSTED_ORIGINS = [
-    'http://127.0.0.1:51702',
-    'http://localhost:51702',
-    'http://127.0.0.1:8000',
-    'http://localhost:8000',
+    *config(
+        'CSRF_TRUSTED_ORIGINS',
+        default='http://127.0.0.1:8000,http://localhost:8000,http://127.0.0.1:8010,http://localhost:8010',
+        cast=Csv(),
+    ),
 ]
 
 
@@ -46,6 +55,9 @@ INSTALLED_APPS = [
     'apps.payments',
     'apps.dashboard',
     'apps.reviews',
+    'apps.wallet.apps.WalletConfig',
+    'apps.lms.apps.LmsConfig',
+    'apps.certificates.apps.CertificatesConfig',
 ]
 
 MIDDLEWARE = [
@@ -83,12 +95,27 @@ WSGI_APPLICATION = 'bilol_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
+DATABASE_ENGINE = config('DATABASE_ENGINE', default='sqlite')
+
+if DATABASE_ENGINE == 'postgresql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('POSTGRES_DB'),
+            'USER': config('POSTGRES_USER'),
+            'PASSWORD': config('POSTGRES_PASSWORD'),
+            'HOST': config('POSTGRES_HOST', default='localhost'),
+            'PORT': config('POSTGRES_PORT', default='5432'),
+            'CONN_MAX_AGE': config('POSTGRES_CONN_MAX_AGE', default=60, cast=int),
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
 
 
 # Password validation
@@ -176,12 +203,12 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 # Click: https://click.uz/merchant/
 
 # Payme Configuration
-PAYME_MERCHANT_ID = ''  # Your Payme Merchant ID
-PAYME_KEY = ''  # Your Payme Secret Key
-PAYME_TEST_MODE = True  # Set to False in production
+PAYME_MERCHANT_ID = config('PAYME_MERCHANT_ID', default='')
+PAYME_KEY = config('PAYME_KEY', default='')
+PAYME_TEST_MODE = config_bool('PAYME_TEST_MODE', default=True)
 
 # Click Configuration
-CLICK_SERVICE_ID = ''  # Your Click Service ID
-CLICK_MERCHANT_ID = ''  # Your Click Merchant ID
-CLICK_SECRET_KEY = ''  # Your Click Secret Key
-CLICK_TEST_MODE = True  # Set to False in production
+CLICK_SERVICE_ID = config('CLICK_SERVICE_ID', default='')
+CLICK_MERCHANT_ID = config('CLICK_MERCHANT_ID', default='')
+CLICK_SECRET_KEY = config('CLICK_SECRET_KEY', default='')
+CLICK_TEST_MODE = config_bool('CLICK_TEST_MODE', default=True)

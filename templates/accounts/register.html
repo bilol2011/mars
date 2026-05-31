@@ -17,41 +17,53 @@
                         
                         <form method="post">
                             {% csrf_token %}
+                            {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                            {% endif %}
                             
                             <div class="mb-3">
                                 <label for="{{ form.username.id_for_label }}" class="form-label">{% trans "Foydalanuvchi nomi" %}</label>
                                 {{ form.username }}
+                                {% for error in form.username.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
                             </div>
                             
                             <div class="mb-3">
                                 <label for="{{ form.email.id_for_label }}" class="form-label">{% trans "Email" %}</label>
                                 {{ form.email }}
+                                {% for error in form.email.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
                             </div>
                             
                             <div class="row g-2 mb-3">
                                 <div class="col-6">
                                     <label for="{{ form.first_name.id_for_label }}" class="form-label">{% trans "Ism" %}</label>
                                     {{ form.first_name }}
+                                    {% for error in form.first_name.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
                                 </div>
                                 <div class="col-6">
                                     <label for="{{ form.last_name.id_for_label }}" class="form-label">{% trans "Familya" %}</label>
                                     {{ form.last_name }}
+                                    {% for error in form.last_name.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
                                 </div>
                             </div>
                             
                             <div class="mb-3">
                                 <label for="{{ form.phone.id_for_label }}" class="form-label">{% trans "Telefon" %}</label>
                                 {{ form.phone }}
+                                {% for error in form.phone.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
                             </div>
                             
                             <div class="mb-3">
                                 <label for="{{ form.password1.id_for_label }}" class="form-label">{% trans "Parol" %}</label>
                                 {{ form.password1 }}
+                                {% for error in form.password1.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
                             </div>
                             
                             <div class="mb-4">
                                 <label for="{{ form.password2.id_for_label }}" class="form-label">{% trans "Parolni tasdiqlang" %}</label>
                                 {{ form.password2 }}
+                                {% for error in form.password2.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
                             </div>
                             
                             <button type="submit" class="btn btn-primary w-full btn-custom">{% trans "Ro'yxatdan o'tish" %}</button>

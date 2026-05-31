@@ -29,6 +29,19 @@
                 <div class="stats-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
+                            <p class="text-muted small">Jami xarajat</p>
+                            <p class="display-6 fw-bold text-primary">{{ total_spent|floatformat:0 }} so'm</p>
+                        </div>
+                        <div class="feature-icon bg-danger bg-opacity-10 text-danger">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
                             <p class="text-muted small">Ballar</p>
                             <p class="display-6 fw-bold text-primary">{{ user_level.points }}</p>
                         </div>
@@ -270,9 +283,12 @@
                             <a href="{% url 'dashboard:certificates' %}" class="text-decoration-none text-muted hover-primary">
                                 <i class="fas fa-certificate me-2"></i>Sertifikatlar
                             </a>
-                            <a href="{% url 'accounts:profile' %}" class="text-decoration-none text-muted hover-primary">
-                                <i class="fas fa-user me-2"></i>Profil sozlamalari
-                            </a>
+            <a href="{% url 'accounts:profile' %}" class="text-decoration-none text-muted hover-primary">
+                <i class="fas fa-user me-2"></i>Profil sozlamalari
+            </a>
+            <a href="{% url 'wallet:dashboard' %}" class="text-decoration-none text-muted hover-primary">
+                <i class="fas fa-wallet me-2"></i>Wallet dashboard
+            </a>
                             {% if user.is_staff %}
                             <a href="{% url 'dashboard:admin_analytics' %}" class="text-decoration-none text-muted hover-primary">
                                 <i class="fas fa-chart-bar me-2"></i>Admin Analytics

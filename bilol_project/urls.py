@@ -19,6 +19,9 @@ urlpatterns = [
     path('dashboard/', include('apps.dashboard.urls')),
     path('payments/', include('apps.payments.urls')),
     path('reviews/', include('apps.reviews.urls')),
+    path('wallet/', include('apps.wallet.urls')),
+    path('', include('apps.lms.urls')),
+    path('certificate/', include('apps.certificates.urls')),
 ]
 
 if settings.DEBUG:

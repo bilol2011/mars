@@ -51,6 +51,7 @@ class EnrollmentAdmin(admin.ModelAdmin):
     list_display = ('user', 'course', 'enrolled_at', 'progress', 'is_completed')
     list_filter = ('is_completed', 'enrolled_at')
     search_fields = ('user__email', 'course__title')
+    ordering = ('-enrolled_at',)
 
 
 @admin.register(LessonProgress)

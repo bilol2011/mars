@@ -42,6 +42,7 @@ class Payment(models.Model):
     Payment model
     """
     STATUS_CHOICES = [
+        ('success', 'Success'),
         ('pending', 'Kutilmoqda'),
         ('paid', 'To\'landi'),
         ('failed', 'Xatolik'),
@@ -55,6 +56,7 @@ class Payment(models.Model):
         ('uzcard', 'Uzcard'),
         ('humo', 'Humo'),
         ('cash', 'Naqd'),
+        ('wallet', 'Wallet'),
     ]
     
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='payments')

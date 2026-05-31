@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}Wallet - BILOL{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+            <div>
+                <h1 class="fw-bold mb-1">Wallet</h1>
+                <p class="text-muted mb-0">Balance, transactions, and purchased courses.</p>
+            </div>
+            <a href="{% url 'wallet:add_balance' %}" class="btn btn-primary btn-custom align-self-md-center">
+                <i class="fas fa-plus me-2"></i>Add Balance
+            </a>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="stats-card h-100">
+                    <p class="text-muted small mb-2">Current balance</p>
+                    <p class="display-6 fw-bold text-primary mb-0">{{ wallet.balance|floatformat:0 }} so'm</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card h-100">
+                    <p class="text-muted small mb-2">Total spent</p>
+                    <p class="display-6 fw-bold text-primary mb-0">{{ total_spent|floatformat:0 }} so'm</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-card h-100">
+                    <p class="text-muted small mb-2">Purchased courses</p>
+                    <p class="display-6 fw-bold text-primary mb-0">{{ enrollments.count }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="card card-custom h-100">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">Last transactions</h5>
+                        <div class="vstack gap-3">
+                            {% for transaction in transactions %}
+                            <div class="d-flex justify-content-between align-items-center border-bottom pb-3">
+                                <div>
+                                    <p class="fw-bold mb-1">{{ transaction.get_transaction_type_display }}</p>
+                                    <p class="text-muted small mb-0">{{ transaction.description|default:"-" }}</p>
+                                </div>
+                                <div class="text-end">
+                                    <p class="fw-bold mb-1">{{ transaction.amount|floatformat:0 }} so'm</p>
+                                    <p class="text-muted small mb-0">{{ transaction.created_at|date:"d.m.Y H:i" }}</p>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted mb-0">No transactions yet.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="card card-custom h-100">
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold mb-3">Purchased courses</h5>
+                        <div class="vstack gap-3">
+                            {% for enrollment in enrollments %}
+                            <a href="{% url 'courses:detail' enrollment.course.slug %}" class="text-decoration-none">
+                                <div class="border rounded p-3">
+                                    <p class="fw-bold text-dark mb-1">{{ enrollment.course.title }}</p>
+                                    <p class="text-muted small mb-0">{{ enrollment.enrolled_at|date:"d.m.Y" }}</p>
+                                </div>
+                            </a>
+                            {% empty %}
+                            <p class="text-muted mb-0">No purchased courses yet.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

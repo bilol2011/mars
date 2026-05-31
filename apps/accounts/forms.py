@@ -55,6 +55,12 @@ class UserRegistrationForm(UserCreationForm):
             'placeholder': 'Parolni tasdiqlang'
         })
 
+    def clean_email(self):
+        email = self.cleaned_data['email'].strip().lower()
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError('Bu email bilan foydalanuvchi allaqachon mavjud.')
+        return email
+
 
 class UserLoginForm(AuthenticationForm):
     """
@@ -72,6 +78,14 @@ class UserLoginForm(AuthenticationForm):
             'placeholder': 'Parol'
         })
     )
+
+    error_messages = {
+        'invalid_login': 'Email yoki parol noto‘g‘ri. Iltimos, qayta tekshirib kiriting.',
+        'inactive': 'Bu akkaunt faol emas.',
+    }
+
+    def clean_username(self):
+        return self.cleaned_data['username'].strip().lower()
 
 
 class UserProfileForm(forms.ModelForm):

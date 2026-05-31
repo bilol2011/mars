@@ -165,13 +165,22 @@
                         </div>
                         
                         {% if is_enrolled %}
-                        <a href="{% url 'dashboard:my_courses' %}" class="btn btn-success w-full btn-custom mb-3">
+                        <button class="btn btn-success w-full btn-custom mb-3" disabled>
+                            <i class="fas fa-check me-2"></i>Purchased
+                        </button>
+                        <a href="{% url 'dashboard:my_courses' %}" class="btn btn-outline-success w-full btn-custom mb-3">
                             <i class="fas fa-play me-2"></i>Kursni davom ettirish
                         </a>
-                        {% elif user.is_authenticated %}
-                        <a href="{% url 'courses:purchase' course.slug %}" class="btn btn-primary w-full btn-custom mb-3">
-                            <i class="fas fa-shopping-cart me-2"></i>Hisobdan sotib olish
+                        <a href="{% url 'lms:continue' course.id %}" class="btn btn-primary w-full btn-custom mb-3">
+                            <i class="fas fa-forward me-2"></i>Continue Learning
                         </a>
+                        {% elif user.is_authenticated %}
+                        <form method="post" action="{% url 'wallet:purchase_course' course.slug %}" class="mb-3">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary w-full btn-custom">
+                                <i class="fas fa-shopping-cart me-2"></i>Buy Course
+                            </button>
+                        </form>
                         <a href="{% url 'dashboard:add_wishlist' course.slug %}" class="btn btn-outline-primary w-full btn-custom mb-3">
                             <i class="fas fa-heart me-2"></i>Saqlash
                         </a>

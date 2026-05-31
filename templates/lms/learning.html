@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Learn - {{ course.title }}{% endblock %}
+
+{% block content %}
+<section class="bg-light py-4">
+    <div class="container-fluid px-3 px-lg-4">
+        <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
+            <div>
+                <h1 class="fw-bold mb-1">{{ course.title }}</h1>
+                <p class="text-muted mb-0">Structured lessons, progress tracking, and certificates.</p>
+            </div>
+            {% if has_access %}
+            <a href="{% url 'lms:continue' course.id %}" class="btn btn-primary btn-custom align-self-lg-center">
+                <i class="fas fa-forward me-2"></i>Continue Learning
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-3">
+                <div class="card card-custom sticky-top" style="top: 96px;">
+                    <div class="card-body p-3">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span class="text-muted">Progress</span>
+                                <span class="fw-bold text-primary">{{ progress_percentage }}%</span>
+                            </div>
+                            <div class="progress progress-custom">
+                                <div class="progress-bar bg-primary" style="width: {{ progress_percentage }}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="accordion" id="moduleAccordion">
+                            {% for module in modules %}
+                            <div class="accordion-item border-0 mb-2">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#module{{ module.id }}">
+                                        {{ module.order }}. {{ module.title }}
+                                    </button>
+                                </h2>
+                                <div id="module{{ module.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#moduleAccordion">
+                                    <div class="accordion-body p-2">
+                                        <div class="vstack gap-2">
+                                            {% for lesson in module.lessons.all %}
+                                            <a href="{% url 'lms:lesson' lesson.id %}" class="d-flex justify-content-between align-items-center text-decoration-none rounded p-2 {% if current_lesson.id == lesson.id %}bg-primary text-white{% else %}text-dark bg-light{% endif %}">
+                                                <span class="small">{{ lesson.order }}. {{ lesson.title|truncatechars:32 }}</span>
+                                                {% if lesson.id in completed_ids %}
+                                                <i class="fas fa-check-circle text-success"></i>
+                                                {% elif lesson.is_preview %}
+                                                <span class="badge bg-info">Preview</span>
+                                                {% elif not has_access %}
+                                                <i class="fas fa-lock text-muted"></i>
+                                                {% endif %}
+                                            </a>
+                                            {% empty %}
+                                            <p class="text-muted small mb-0">No lessons yet.</p>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted mb-0">No modules yet.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
+                <div class="card card-custom">
+                    <div class="card-body p-4">
+                        {% if current_lesson %}
+                        <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-3">
+                            <div>
+                                <p class="text-primary fw-bold mb-1">{{ current_lesson.module.title }}</p>
+                                <h2 class="fw-bold mb-1">{{ current_lesson.title }}</h2>
+                                <p class="text-muted mb-0">{{ current_lesson.duration_minutes }} minutes</p>
+                            </div>
+                            {% if current_lesson.is_preview %}
+                            <span class="badge bg-info align-self-md-start">Preview lesson</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="ratio ratio-16x9 bg-dark rounded overflow-hidden mb-4">
+                            {% if current_lesson.video_url %}
+                            <iframe src="{{ current_lesson.get_embed_url }}" title="{{ current_lesson.title }}" allowfullscreen></iframe>
+                            {% else %}
+                            <div class="d-flex align-items-center justify-content-center text-white">
+                                <div class="text-center">
+                                    <i class="fas fa-play-circle display-4 mb-3"></i>
+                                    <p class="mb-0">Video player area</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <p class="text-muted">{{ current_lesson.description|default:"No lesson description yet." }}</p>
+
+                        {% if has_access %}
+                        <form method="post" action="{% url 'lms:mark_complete' current_lesson.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-custom">
+                                <i class="fas fa-check me-2"></i>Mark Complete
+                            </button>
+                        </form>
+                        {% else %}
+                        <div class="alert alert-warning mb-0">
+                            Purchase this course to unlock all lessons.
+                        </div>
+                        {% endif %}
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-book-open text-muted display-4 mb-3"></i>
+                            <p class="text-muted mb-0">No lessons are available yet.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

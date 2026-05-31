@@ -6,9 +6,11 @@ from django.utils import timezone
 from datetime import timedelta
 from apps.courses.models import Enrollment, Course, Lesson
 from apps.payments.models import Payment
-from apps.accounts.models import Wallet, Transaction, UserLevel, Badge, UserBadge, User
+from apps.accounts.models import UserLevel, Badge, UserBadge, User
 from apps.reviews.models import Review
-from .models import Wishlist, Certificate, Notification, CourseRecommendation, DailyAnalytics, PromoCode, Announcement
+from apps.wallet.models import Transaction, Wallet
+from apps.certificates.models import Certificate
+from .models import Wishlist, Notification, CourseRecommendation, DailyAnalytics, PromoCode, Announcement
 
 
 def is_admin(user):
@@ -49,7 +51,10 @@ def dashboard_home_view(request):
     wishlist = Wishlist.objects.filter(user=user)
     
     # Get recent transactions
-    recent_transactions = Transaction.objects.filter(user=user).order_by('-created_at')[:5]
+    recent_transactions = wallet.transactions.order_by('-created_at')[:5]
+    total_spent = wallet.transactions.filter(transaction_type=Transaction.PURCHASE).aggregate(
+        total=Sum('amount')
+    )['total'] or 0
     
     # Get unread notifications
     unread_notifications = Notification.objects.filter(user=user, is_read=False)[:5]
@@ -67,6 +72,7 @@ def dashboard_home_view(request):
         'in_progress_enrollments': in_progress_enrollments,
         'wishlist': wishlist,
         'recent_transactions': recent_transactions,
+        'total_spent': total_spent,
         'unread_notifications': unread_notifications,
         'recommendations': recommendations,
     }
@@ -78,10 +84,13 @@ def my_courses_view(request):
     """
     My courses view
     """
-    enrollments = Enrollment.objects.filter(user=request.user).order_by('-enrolled_at')
+    enrollments = Enrollment.objects.filter(user=request.user).select_related('course').order_by('-enrolled_at')
+    certificates = Certificate.objects.filter(user=request.user).select_related('course')
+    certificate_by_course = {certificate.course_id: certificate for certificate in certificates}
     
     context = {
         'enrollments': enrollments,
+        'certificate_by_course': certificate_by_course,
     }
     return render(request, 'dashboard/my_courses.html', context)
 
@@ -141,9 +150,7 @@ def certificates_view(request):
     """
     Certificates view
     """
-    certificates = Certificate.objects.filter(
-        enrollment__user=request.user
-    ).select_related('enrollment__course')
+    certificates = Certificate.objects.filter(user=request.user).select_related('course')
     
     context = {
         'certificates': certificates,
@@ -188,7 +195,7 @@ def admin_analytics_view(request):
     total_users = UserLevel.objects.count()
     total_courses = Course.objects.count()
     total_enrollments = Enrollment.objects.count()
-    total_revenue = Transaction.objects.filter(transaction_type='purchase').aggregate(
+    total_revenue = Transaction.objects.filter(transaction_type=Transaction.PURCHASE).aggregate(
         total=Sum('amount')
     )['total'] or 0
     
@@ -270,7 +277,7 @@ def admin_user_detail_view(request, user_id):
     """Admin user detail view"""
     user = get_object_or_404(User, id=user_id)
     enrollments = Enrollment.objects.filter(user=user).select_related('course')
-    transactions = Transaction.objects.filter(user=user).order_by('-created_at')
+    transactions = Transaction.objects.filter(wallet__user=user).order_by('-created_at')
     wallet = Wallet.objects.filter(user=user).first()
     
     context = {
@@ -403,15 +410,25 @@ def admin_adjust_wallet_view(request, wallet_id):
         try:
             amount = float(amount)
             if action == 'add':
-                wallet.add_balance(amount)
+                wallet.deposit(amount)
+                Transaction.objects.create(
+                    wallet=wallet,
+                    transaction_type=Transaction.DEPOSIT,
+                    amount=amount,
+                    description='Admin wallet adjustment',
+                )
                 messages.success(request, f'{amount} so\'m qo\'shildi.')
             elif action == 'deduct':
-                if wallet.deduct_balance(amount):
-                    messages.success(request, f'{amount} so\'m yechildi.')
-                else:
-                    messages.error(request, 'Hisobda yetarli mablag\' yo\'q.')
-        except ValueError:
-            messages.error(request, 'Noto\'g\'ri summa.')
+                wallet.withdraw(amount)
+                Transaction.objects.create(
+                    wallet=wallet,
+                    transaction_type=Transaction.PURCHASE,
+                    amount=amount,
+                    description='Admin wallet deduction',
+                )
+                messages.success(request, f'{amount} so\'m yechildi.')
+        except Exception as exc:
+            messages.error(request, str(exc))
         
         return redirect('dashboard:admin_wallets')
     

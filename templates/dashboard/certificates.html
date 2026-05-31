@@ -16,26 +16,26 @@
                 <div class="card card-custom h-100">
                     <div class="bg-primary p-4 text-center">
                         <i class="fas fa-certificate text-white fs-1 mb-3"></i>
-                        <h5 class="fw-bold text-white">{{ certificate.enrollment.course.title }}</h5>
+                        <h5 class="fw-bold text-white">{{ certificate.course.title }}</h5>
                     </div>
                     <div class="card-body">
                         <div class="vstack gap-2 mb-3">
                             <div class="d-flex justify-content-between text-muted">
                                 <span>O'quvchi:</span>
-                                <span class="fw-medium">{{ certificate.enrollment.user.get_full_name }}</span>
+                                <span class="fw-medium">{{ certificate.user.get_full_name }}</span>
                             </div>
                             <div class="d-flex justify-content-between text-muted">
                                 <span>Kurs:</span>
-                                <span class="fw-medium">{{ certificate.enrollment.course.title }}</span>
+                                <span class="fw-medium">{{ certificate.course.title }}</span>
                             </div>
                             <div class="d-flex justify-content-between text-muted">
                                 <span>Tugatilgan sana:</span>
-                                <span class="fw-medium">{{ certificate.issued_date|date:"d.m.Y" }}</span>
+                                <span class="fw-medium">{{ certificate.issued_at|date:"d.m.Y" }}</span>
                             </div>
                         </div>
-                        <button class="btn btn-primary w-full btn-custom">
+                        <a href="{% url 'certificates:download' certificate.certificate_id %}" class="btn btn-primary w-full btn-custom">
                             <i class="fas fa-download me-2"></i>Yuklab olish
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
